@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CYBER ALERT 3D: Rise of A.U. | A.U. Studio (Achita & Udom Games)</title>
+  <meta name="description" content="CYBER ALERT 3D: Rise of A.U. — เกม 3D RTS สงครามไซเบอร์และฝูงโดรนปี 2030 โดย A.U. Studio (Achita & Udom Games) เล่นได้ทันทีบนเบราว์เซอร์" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #060812;
+      --panel-bg: rgba(10, 14, 28, 0.92);
+      --panel-border: #1e2d52;
+      --au-cyan: #00f0ff;
+      --au-purple: #b829ff;
+      --eagle-red: #ff2a4b;
+      --eagle-gold: #ffcc00;
+      --iron-orange: #ff7700;
+      --iron-steel: #94a3b8;
+      --ore-green: #00ff9d;
+      --text-main: #e2e8f0;
+      --text-muted: #8b9bb4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: 'Kanit', 'Rajdhani', sans-serif;
+      color: var(--text-main);
+      touch-action: none;
+    }
+
+    #game-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* Box Selection Overlay */
+    #selection-box {
+      position: fixed;
+      border: 2px solid var(--au-cyan);
+      background: rgba(0, 240, 255, 0.14);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      pointer-events: none;
+      display: none;
+      z-index: 20;
+    }
+
+    /* Top HUD Bar */
+    #top-hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 290px;
+      height: 56px;
+      background: linear-gradient(180deg, rgba(8, 12, 26, 0.96) 0%, rgba(10, 16, 34, 0.85) 100%);
+      border-bottom: 2px solid #1e325c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 30;
+      gap: 10px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-emblem {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #00d2ff 0%, #9d00ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+      flex-shrink: 0;
+    }
+
+    .brand-titles {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .brand-titles h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-titles span {
+      font-size: 11px;
+      color: var(--au-cyan);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .resources-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .res-pill {
+      background: rgba(4, 9, 20, 0.9);
+      border: 1px solid #263b6a;
+      border-radius: 6px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 125px;
+    }
+
+    .res-pill.low-power {
+      border-color: var(--eagle-red);
+      background: rgba(60, 10, 20, 0.85);
+      animation: pulse-danger 1s infinite alternate;
+    }
+
+    @keyframes pulse-danger {
+      from { opacity: 1; }
+      to { opacity: 0.65; }
+    }
+
+    .res-icon {
+      font-size: 16px;
+    }
+
+    .res-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .res-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .res-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .res-val.credits {
+      color: var(--ore-green);
+    }
+
+    .res-val.power-ok {
+      color: var(--au-cyan);
+    }
+
+    .res-val.power-low {
+      color: var(--eagle-red);
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-btn {
+      background: rgba(18, 28, 56, 0.9);
+      border: 1px solid #2e477d;
+      color: #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .hud-btn:hover {
+      background: rgba(0, 240, 255, 0.18);
+      border-color: var(--au-cyan);
+      color: #fff;
+    }
+
+    .hud-btn.active {
+      background: rgba(184, 41, 255, 0.28);
+      border-color: var(--au-purple);
+      color: #fff;
+    }
+
+    /* Faction Status Banner */
+    #faction-ticker {
+      position: fixed;
+      top: 64px;
+      left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 25;
+      pointer-events: none;
+      max-width: 340px;
+    }
+
+    .faction-badge {
+      background: rgba(8, 12, 26, 0.84);
+      border-left: 4px solid var(--au-cyan);
+      padding: 5px 10px;
+      border-radius: 0 6px 6px 0;
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .faction-badge.eagle {
+      border-left-color: var(--eagle-red);
+    }
+
+    .faction-badge.iron {
+      border-left-color: var(--iron-orange);
+    }
+
+    .faction-name {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .faction-status {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* Alert Toast Banner */
+    #eva-alert {
+      position: fixed;
+      top: 68px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 10, 34, 0.94);
+      border: 1px solid var(--au-cyan);
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.25s ease;
+      text-align: center;
+      max-width: 85vw;
+    }
+
+    #eva-alert.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #eva-alert.warn {
+      border-color: var(--eagle-red);
+      background: rgba(50, 8, 18, 0.95);
+      color: #ffd1d9;
+    }
+
+    #eva-alert.hack {
+      border-color: var(--au-purple);
+      background: rgba(38, 10, 56, 0.95);
+      color: #f0d1ff;
+    }
+
+    /* Red Alert 2 Style Right Command Sidebar */
+    #command-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 290px;
+      background: linear-gradient(180deg, #0b1021 0%, #080b18 100%);
+      border-left: 2px solid #223560;
+      display: flex;
+      flex-direction: column;
+      z-index: 35;
+    }
+
+    .sidebar-header {
+      padding: 10px 12px;
+      background: rgba(16, 24, 48, 0.95);
+      border-bottom: 1px solid #223560;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--au-cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .wave-timer-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      color: var(--eagle-gold);
+      background: rgba(255, 204, 0, 0.12);
+      border: 1px solid rgba(255, 204, 0, 0.35);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* Tactical Radar Minimap */
+    .radar-wrapper {
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e2f56;
+      background: #050811;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #radar-canvas {
+      width: 262px;
+      height: 126px;
+      background: #030710;
+      border: 1px solid #254073;
+      border-radius: 4px;
+      cursor: crosshair;
+    }
+
+    .radar-caption {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Sidebar Tabs */
+    .sidebar-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid #223560;
+      background: #090e1d;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 9px 6px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(0, 240, 255, 0.1);
+      border-bottom-color: var(--au-cyan);
+    }
+
+    /* Build Grid */
+    .build-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .build-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .build-scroll::-webkit-scrollbar-thumb {
+      background: #253b6e;
+      border-radius: 3px;
+    }
+
+    .cameo-card {
+      background: linear-gradient(135deg, rgba(16, 25, 50, 0.92) 0%, rgba(10, 15, 32, 0.92) 100%);
+      border: 1px solid #263c6e;
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .cameo-card:hover:not(.disabled) {
+      border-color: var(--au-cyan);
+      background: rgba(0, 240, 255, 0.12);
+      transform: translateX(-2px);
+    }
+
+    .cameo-card.active-place {
+      border-color: var(--ore-green);
+      background: rgba(0, 255, 157, 0.16);
+    }
+
+    .cameo-card.disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .cameo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      background: rgba(5, 10, 24, 0.9);
+      border: 1px solid #314b85;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0;
+    }
+
+    .cameo-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cameo-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .cameo-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cameo-cost {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ore-green);
+      flex-shrink: 0;
+    }
+
+    .cameo-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .cameo-power {
+      font-size: 10px;
+      font-family: 'Orbitron', sans-serif;
+      margin-top: 2px;
+      display: inline-block;
+    }
+
+    .power-plus { color: #00ff9d; }
+    .power-minus { color: #ff8a65; }
+
+    /* Selected Unit / Structure Inspector */
+    #inspector-panel {
+      padding: 10px 12px;
+      background: rgba(8, 13, 28, 0.98);
+      border-top: 1px solid #223560;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .inspector-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inspector-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--au-cyan);
+    }
+
+    .inspector-count {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      color: #fff;
+      background: rgba(0, 240, 255, 0.18);
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+
+    .inspector-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .inspector-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .insp-btn {
+      background: rgba(24, 38, 74, 0.9);
+      border: 1px solid #355399;
+      color: #fff;
+      border-radius: 4px;
+      padding: 5px 8px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .insp-btn:hover {
+      border-color: var(--au-cyan);
+      background: rgba(0, 240, 255, 0.2);
+    }
+
+    .insp-btn.recycle-btn {
+      border-color: var(--ore-green);
+      background: rgba(0, 255, 157, 0.15);
+      color: var(--ore-green);
+    }
+
+    .insp-btn.recycle-btn:hover {
+      background: rgba(0, 255, 157, 0.3);
+      color: #fff;
+    }
+
+    /* Bottom Touch & Mouse Command Dock */
+    #bottom-command-bar {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      right: 302px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .cmd-group {
+      pointer-events: auto;
+      background: rgba(8, 12, 26, 0.92);
+      border: 1px solid #263c6e;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      background: rgba(16, 25, 48, 0.9);
+      border: 1px solid #2d467e;
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--au-cyan);
+      color: #fff;
+    }
+
+    .mode-btn.active {
+      background: rgba(0, 240, 255, 0.22);
+      border-color: var(--au-cyan);
+      color: #fff;
+    }
+
+    .mode-btn.mode-attack.active {
+      background: rgba(255, 42, 75, 0.25);
+      border-color: var(--eagle-red);
+    }
+
+    .mode-btn.mode-recycle.active {
+      background: rgba(0, 255, 157, 0.25);
+      border-color: var(--ore-green);
+    }
+
+    .cam-pad {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cam-btn {
+      width: 34px;
+      height: 34px;
+      background: rgba(16, 25, 48, 0.9);
+      border: 1px solid #2d467e;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cam-btn:hover {
+      border-color: var(--au-cyan);
+      background: rgba(0, 240, 255, 0.2);
+    }
+
+    /* Briefing / Victory Modal */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 16, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    #modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      background: linear-gradient(180deg, #0d152c 0%, #070b18 100%);
+      border: 2px solid var(--au-cyan);
+      border-radius: 10px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px 24px;
+      color: var(--text-main);
+    }
+
+    .modal-studio {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      color: var(--au-purple);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      margin: 4px 0 12px;
+    }
+
+    .factions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .faction-card {
+      background: rgba(6, 10, 22, 0.9);
+      border: 1px solid #253969;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .faction-card.au { border-top: 3px solid var(--au-cyan); }
+    .faction-card.eagle { border-top: 3px solid var(--eagle-red); }
+    .faction-card.iron { border-top: 3px solid var(--iron-orange); }
+
+    .faction-card h3 {
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .faction-card p {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .tips-list {
+      background: rgba(0, 240, 255, 0.06);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .tips-list li {
+      margin-left: 16px;
+      margin-bottom: 3px;
+    }
+
+    .start-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #00c6ff 0%, #9d00ff 100%);
+      border: none;
+      color: #fff;
+      font-family: 'Orbitron', 'Kanit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: filter 0.15s;
+    }
+
+    .start-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    /* Placement Hint Banner */
+    #placement-banner {
+      position: fixed;
+      bottom: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 255, 157, 0.18);
+      border: 1px solid var(--ore-green);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      z-index: 35;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #placement-banner.active {
+      display: flex;
+    }
+
+    .cancel-place-btn {
+      background: rgba(255, 42, 75, 0.85);
+      border: none;
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Responsive Mobile / iPad Layout */
+    @media (max-width: 900px) {
+      #top-hud {
+        right: 230px;
+        height: 50px;
+        padding: 0 8px;
+      }
+      .brand-titles h1 { font-size: 12px; }
+      .brand-titles span { display: none; }
+      .res-pill { min-width: 95px; padding: 3px 8px; }
+      .res-val { font-size: 13px; }
+      #command-sidebar { width: 230px; }
+      #radar-canvas { width: 206px; height: 96px; }
+      #bottom-command-bar { right: 240px; bottom: 8px; left: 8px; }
+      .mode-btn { padding: 5px 8px; font-size: 11.5px; }
+      .factions-grid { grid-template-columns: 1fr; }
+      #faction-ticker { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      #top-hud {
+        right: 0;
+        height: 46px;
+      }
+      #command-sidebar {
+        top: 46px;
+        width: 185px;
+      }
+      #radar-canvas { width: 165px; height: 78px; }
+      #bottom-command-bar {
+        right: 192px;
+        bottom: 6px;
+        left: 6px;
+      }
+      .cameo-desc { display: none; }
+      .cameo-icon { width: 32px; height: 32px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Viewport -->
+  <div id="game-container"></div>
+  <div id="selection-box"></div>
+
+  <!-- Top HUD -->
+  <header id="top-hud">
+    <div class="brand-block">
+      <div class="brand-emblem">A.U.</div>
+      <div class="brand-titles">
+        <h1>CYBER ALERT 3D: RISE OF A.U.</h1>
+        <span>Commander Achita &amp; General Udom — A.U. Studio</span>
+      </div>
+    </div>
+
+    <div class="resources-bar">
+      <div class="res-pill" title="เงินทุนสงคราม (ขุดแร่ Energy Crystal หรือส่งยูนิตเข้าโรงบด Cyber Recycler)">
+        <span class="res-icon">💎</span>
+        <div class="res-info">
+          <span class="res-label">Credits</span>
+          <span class="res-val credits" id="hud-credits">$3,500</span>
+        </div>
+      </div>
+
+      <div class="res-pill" id="power-pill" title="พลังงานไฟฟ้า (หากไฟไม่พอ ป้อม Signal Override Tower จะยิงช้าลง)">
+        <span class="res-icon">⚡</span>
+        <div class="res-info">
+          <span class="res-label">Power Grid</span>
+          <span class="res-val power-ok" id="hud-power">170 / 70</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <button class="hud-btn active" id="btn-audio" title="เปิด/ปิดเสียงสังเคราะห์ Web Audio API">🔊 เสียง: เปิด</button>
+      <button class="hud-btn" id="btn-force-wave" title="เรียกคลื่นทัพ AI บุกทันทีเพื่อทดสอบกองทัพ">🚨 เรียกทัพ AI</button>
+      <button class="hud-btn" id="btn-briefing" title="ดูข้อมูลขั้วอำนาจและคู่มือการรบ">📘 พิมพ์เขียว</button>
+    </div>
+  </header>
+
+  <!-- 3 Superpowers Status Ticker -->
+  <aside id="faction-ticker">
+    <div class="faction-badge">
+      <span class="faction-name">🟣 A.U. Cyber Syndicate (คุณ)</span>
+      <span class="faction-status" id="stat-au">ONLINE</span>
+    </div>
+    <div class="faction-badge eagle">
+      <span class="faction-name">🔴 United Eagle Hegemony (AI 1)</span>
+      <span class="faction-status" id="stat-eagle">ACTIVE</span>
+    </div>
+    <div class="faction-badge iron">
+      <span class="faction-name">🟠 Eurasian Iron Bloc (AI 2)</span>
+      <span class="faction-status" id="stat-iron">ACTIVE</span>
+    </div>
+  </aside>
+
+  <!-- EVA Center Alert -->
+  <div id="eva-alert">⚡ ระบบบัญชาการ A.U. ออนไลน์ พร้อมรบ!</div>
+
+  <!-- Placement Mode Hint -->
+  <div id="placement-banner">
+    <span id="placement-text">กำลังเลือกพื้นที่วางตึก: แตะ/คลิกบนพื้นสนามรบใกล้ฐานของคุณ</span>
+    <button class="cancel-place-btn" id="btn-cancel-place">ยกเลิก (ESC)</button>
+  </div>
+
+  <!-- Right Sidebar (Red Alert 2 Style) -->
+  <aside id="command-sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-header-title">A.U. COMMAND LINK</span>
+      <span class="wave-timer-tag" id="wave-timer">WAVE IN 35s</span>
+    </div>
+
+    <!-- Tactical Radar Minimap -->
+    <div class="radar-wrapper">
+      <canvas id="radar-canvas" width="262" height="126"></canvas>
+      <div class="radar-caption">
+        <span>🟢 แร่ Energy Ore</span>
+        <span>แตะเรดาร์เพื่อย้ายกล้อง</span>
+      </div>
+    </div>
+
+    <!-- Sidebar Category Tabs -->
+    <div class="sidebar-tabs">
+      <button class="tab-btn active" id="tab-buildings">🏗️ สร้างฐาน (6)</button>
+      <button class="tab-btn" id="tab-units">🤖 ผลิตยูนิต (4)</button>
+    </div>
+
+    <!-- Buildings List -->
+    <div class="build-scroll" id="list-buildings"></div>
+
+    <!-- Units List -->
+    <div class="build-scroll" id="list-units" style="display: none;"></div>
+
+    <!-- Selected Inspector -->
+    <div id="inspector-panel">
+      <div>
+        <div class="inspector-header">
+          <span class="inspector-name" id="insp-title">A.U. Tactical Cursor</span>
+          <span class="inspector-count" id="insp-count">0 SELECTED</span>
+        </div>
+        <div class="inspector-sub" id="insp-desc">
+          ลากเมาส์คลุมเลือกยูนิต หรือใช้ปุ่มโหมดสั่งการด้านล่างสำหรับจอสัมผัส
+        </div>
+      </div>
+      <div class="inspector-btns">
+        <button class="insp-btn" id="btn-select-all">⚔️ เลือกกองรบทั้งหมด</button>
+        <button class="insp-btn recycle-btn" id="btn-send-recycle">♻️ ส่งเข้าโรงบด ($)</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Touch & Mouse Command Bar -->
+  <nav id="bottom-command-bar">
+    <div class="cmd-group">
+      <button class="mode-btn active" data-mode="select" id="mode-select">
+        🔲 โหมดเลือก (Select)
+      </button>
+      <button class="mode-btn mode-attack" data-mode="move_attack" id="mode-move-attack">
+        🎯 เดินทัพ / โจมตี / แฮ็ก
+      </button>
+      <button class="mode-btn mode-recycle" data-mode="recycle" id="mode-recycle">
+        ♻️ สั่งเข้าโรงบด (Recycle $)
+      </button>
+      <button class="mode-btn" data-mode="pan" id="mode-pan">
+        ✋ เลื่อนจอ (Pan)
+      </button>
+    </div>
+
+    <div class="cmd-group cam-pad">
+      <button class="cam-btn" id="cam-home" title="กลับไปที่ฐาน A.U. Command HQ">🏠</button>
+      <button class="cam-btn" id="cam-zoom-in" title="ซูมเข้า (+)">➕</button>
+      <button class="cam-btn" id="cam-zoom-out" title="ซูมออก (-)">➖</button>
+    </div>
+  </nav>
+
+  <!-- Mission Briefing Modal -->
+  <div id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-studio">A.U. STUDIO (ACHITA &amp; UDOM GAMES) PRESENTS</div>
+      <h2 class="modal-title">CYBER ALERT 3D: RISE OF A.U.</h2>
+      <p style="font-size: 13px; color: #cbd5e1; line-height: 1.45;">
+        ปี 2030 สมรภูมิไซเบอร์และฝูงโดรนระอุถึงขีดสุด! คุณรับบทผู้บัญชาการสูงสุดร่วมกับ <strong>Commander Achita</strong> และ <strong>General Udom</strong> แห่ง <strong>A.U. Cyber Syndicate</strong> เพื่อต่อกรกับ 2 มหาอำนาจ AI ที่บุกโจมตีจากทางเหนือและตะวันออก!
+      </p>
+
+      <div class="factions-grid">
+        <div class="faction-card au">
+          <h3>🟣 A.U. Cyber Syndicate</h3>
+          <p>ฝ่ายผู้เล่น (สีฟ้า/ม่วงไซเบอร์) เน้นฝูงโดรนพลีชีพ รถถังเลเซอร์ชิ่ง และ <strong>A.U. Hack-Rover</strong> ยิงคลื่นแฮ็กยึดรถถังศัตรูมาเป็นของเราหรือส่งเข้าโรงบดแลกเงินสด!</p>
+        </div>
+        <div class="faction-card eagle">
+          <h3>🔴 United Eagle Hegemony</h3>
+          <p>บอท AI ที่ 1 (สีแดง/ทอง) มหาอำนาจพญาอินทรีคลั่ง เน้นฝูงรถถังเลเซอร์ Prism และคลื่นดาวเทียมยิงลำแสง</p>
+        </div>
+        <div class="faction-card iron">
+          <h3>🟠 Eurasian Iron Bloc</h3>
+          <p>บอท AI ที่ 2 (สีส้ม/เทาเหล็ก) สหพันธรัฐหมีเหล็ก เน้นยานเกราะหนักและยานแม่โดรนยักษ์ <strong>Sky Mothership</strong> ทิ้งระเบิดปูพรม</p>
+        </div>
+      </div>
+
+      <ul class="tips-list">
+        <li><strong>แฮ็กแล้วย่อยเป็นเงินสด (Yuri Cyber Combo):</strong> ใช้ยูนิต <strong>A.U. Hack-Rover</strong> ยิงคลื่นสีม่วงยึดรถถังศัตรูให้เปลี่ยนสีเป็นฝ่ายเรา แล้วกดปุ่ม <strong>♻️ สั่งเข้าโรงบด (Cyber Recycler)</strong> เพื่อบดเป็นเงินสด Credits ทันที!</li>
+        <li><strong>ระวังระบบไฟฟ้า (Power Grid):</strong> หากค่าไฟฟ้าติดลบ ป้อม <strong>Signal Override Tower</strong> จะทำงานช้าลง ควรสร้าง <strong>Fusion Power Plant</strong> เพิ่มเสมอ</li>
+        <li><strong>รองรับทั้ง PC &amp; Mobile/iPad:</strong> บน PC ลากเมาส์คลุมเลือกยูนิตและคลิกขวาเพื่อสั่งการได้ทันที หรือใช้ปุ่มโหมดคำสั่งด้านล่างสำหรับหน้าจอสัมผัส</li>
+      </ul>
+
+      <button class="start-btn" id="btn-start-mission">⚡ เข้าสู่สมรภูมิ (INITIALIZE BATTLEFIELD)</button>
+    </div>
+  </div>
+
+  <script>
+    /********************************************************************
+     * CYBER ALERT 3D: Rise of A.U.
+     * Developed by A.U. Studio (Achita & Udom Games)
+     * Full Three.js Isometric 3D RTS Engine + Web Audio Synthesizer
+     ********************************************************************/
+
+    // === 1. PROCEDURAL WEB AUDIO SYNTHESIZER ===
+    class CyberAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        if (this.enabled) this.init();
+        return this.enabled;
+      }
+
+      playLaser(isPrism = false) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = isPrism ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(isPrism ? 980 : 680, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.19);
+      }
+
+      playHackWave() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.linearRampToValueAtTime(760, now + 0.45);
+
+        lfo.type = 'square';
+        lfo.frequency.setValueAtTime(28, now);
+        lfoGain.gain.setValueAtTime(75, now);
+
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        lfo.start(now);
+        osc.stop(now + 0.46);
+        lfo.stop(now + 0.46);
+      }
+
+      playExplosion(heavy = false) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const dur = heavy ? 0.55 : 0.32;
+        const bufferSize = this.ctx.sampleRate * dur;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+        }
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(heavy ? 360 : 580, now);
+        filter.frequency.exponentialRampToValueAtTime(60, now + dur);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(heavy ? 0.28 : 0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(now);
+      }
+
+      playCashRecycle() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.14, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.18);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + idx * 0.06 + 0.18);
+        });
+      }
+
+      playSiren() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.linearRampToValueAtTime(840, now + 0.35);
+        osc.frequency.linearRampToValueAtTime(420, now + 0.7);
+        osc.frequency.linearRampToValueAtTime(840, now + 1.05);
+
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.15);
+      }
+
+      playUiClick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    const sfx = new CyberAudioEngine();
+
+    // === 2. FACTIONS, BUILDINGS & UNITS DEFINITIONS ===
+    const FACTIONS = {
+      AU: {
+        id: 'AU',
+        name: 'A.U. Cyber Syndicate',
+        primary: 0x00f0ff,
+        secondary: 0xb829ff,
+        css: '#00f0ff'
+      },
+      EAGLE: {
+        id: 'EAGLE',
+        name: 'United Eagle Hegemony',
+        primary: 0xff2a4b,
+        secondary: 0xffcc00,
+        css: '#ff2a4b'
+      },
+      IRON: {
+        id: 'IRON',
+        name: 'Eurasian Iron Bloc',
+        primary: 0xff7700,
+        secondary: 0x94a3b8,
+        css: '#ff7700'
+      }
+    };
+
+    const BUILDING_CATALOG = [
+      {
+        type: 'hq',
+        name: 'A.U. Command HQ',
+        icon: '🏛️',
+        cost: 1500,
+        power: 50,
+        hp: 2200,
+        radius: 5.2,
+        desc: 'ฐานบัญชาการหลักของ Commander Achita & General Udom'
+      },
+      {
+        type: 'power',
+        name: 'Fusion Power Plant',
+        icon: '⚡',
+        cost: 400,
+        power: 120,
+        hp: 750,
+        radius: 3.4,
+        desc: 'โรงไฟฟ้าฟิวชัน หากไฟติดลบ ป้อมปืนจะยิงช้าลงมาก'
+      },
+      {
+        type: 'refinery',
+        name: 'Ore Refinery + Harvester',
+        icon: '🏭',
+        cost: 800,
+        power: -30,
+        hp: 1100,
+        radius: 4.4,
+        desc: 'โรงถลุงแร่ แถมฟรีรถขุดแร่ Harvester วิ่งเก็บเงินอัตโนมัติ'
+      },
+      {
+        type: 'factory',
+        name: 'Cyber & Drone Factory',
+        icon: '🤖',
+        cost: 700,
+        power: -40,
+        hp: 1250,
+        radius: 4.6,
+        desc: 'โรงงานผลิตกองทัพโดรน รถถังเลเซอร์ และ Hack-Rover'
+      },
+      {
+        type: 'tower',
+        name: 'Signal Override Tower',
+        icon: '📡',
+        cost: 500,
+        power: -50,
+        hp: 850,
+        radius: 2.6,
+        range: 28,
+        damage: 38,
+        cooldown: 1.0,
+        desc: 'ป้อมเสาสัญญาณยิงลำแสงป้องกันฐาน (ใช้ไฟฟ้าสูง)'
+      },
+      {
+        type: 'recycler',
+        name: 'Cyber Recycler',
+        icon: '♻️',
+        cost: 600,
+        power: -25,
+        hp: 950,
+        radius: 4.0,
+        desc: 'โรงบดรีไซเคิล! สั่งยูนิตที่แฮ็กยึดมาเดินเข้าตึกนี้เพื่อบดเป็นเงินสด!'
+      }
+    ];
+
+    const UNIT_CATALOG = [
+      {
+        type: 'kamikaze',
+        name: 'FPV Kamikaze Drone',
+        icon: '💥',
+        cost: 150,
+        hp: 140,
+        speed: 19,
+        range: 4.2,
+        damage: 210,
+        cooldown: 0.2,
+        flying: true,
+        flyHeight: 4.2,
+        recycleValue: 110,
+        desc: 'ฝูงโดรนพลีชีพความเร็วสูง พุ่งชนเป้าหมายระเบิดเป็นกลุ่ม'
+      },
+      {
+        type: 'prism',
+        name: 'Prism Laser Tank',
+        icon: '🔦',
+        cost: 450,
+        hp: 460,
+        speed: 9.5,
+        range: 25,
+        damage: 55,
+        cooldown: 1.35,
+        flying: false,
+        recycleValue: 340,
+        desc: 'รถถังยิงลำแสงเลเซอร์ชิ่งกระจายใส่ศัตรูรอบข้าง'
+      },
+      {
+        type: 'hackrover',
+        name: 'A.U. Hack-Rover',
+        icon: '🧠',
+        cost: 650,
+        hp: 380,
+        speed: 10.5,
+        range: 22,
+        damage: 0,
+        cooldown: 2.2,
+        hackDuration: 1.6,
+        flying: false,
+        recycleValue: 450,
+        desc: 'ยูนิตพระเอกสไตล์ Yuri! ยิงคลื่นแฮ็กสีม่วงยึดรถถังศัตรูมาเป็นฝ่ายเราทันที!'
+      },
+      {
+        type: 'mothership',
+        name: 'Sky Mothership',
+        icon: '🛸',
+        cost: 1200,
+        hp: 1650,
+        speed: 5.8,
+        range: 20,
+        damage: 135,
+        cooldown: 2.1,
+        flying: true,
+        flyHeight: 11.5,
+        recycleValue: 850,
+        desc: 'ยานแม่โดรนยักษ์ลอยฟ้าสไตล์ Kirov อึดถึกทน ทิ้งระเบิดปูพรม'
+      },
+      // Special economy unit spawned with Ore Refinery
+      {
+        type: 'harvester',
+        name: 'Cyber Ore Harvester',
+        icon: '🚜',
+        cost: 350,
+        hp: 650,
+        speed: 8.2,
+        range: 0,
+        damage: 0,
+        cooldown: 1,
+        flying: false,
+        hiddenFromMenu: true,
+        recycleValue: 260,
+        desc: 'รถขุดแร่ Energy Crystal Ore อัตโนมัติ'
+      }
+    ];
+
+    // === 3. GAME STATE ===
+    const state = {
+      credits: 3500,
+      powerProduced: 0,
+      powerConsumed: 0,
+      lowPower: false,
+      commandMode: 'select', // 'select' | 'move_attack' | 'recycle' | 'pan'
+      placingBuildingType: null,
+      buildings: [],
+      units: [],
+      oreNodes: [],
+      projectiles: [],
+      beams: [],
+      particles: [],
+      selectedUnits: [],
+      selectedBuilding: null,
+      waveTimer: 35,
+      waveCount: 1,
+      nextId: 1
+    };
+
+    // === 4. THREE.JS SCENE & ISOMETRIC CAMERA SETUP ===
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050812);
+    scene.fog = new THREE.FogExp2(0x050812, 0.0032);
+
+    const MAP_SIZE = 180; // -90 to +90
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    // Isometric-style Perspective Camera
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 500);
+    const camTarget = new THREE.Vector3(-38, 0, 38); // Start looking at Player Base (South-West)
+    let camZoom = 78; // Distance factor
+    const camAngle = Math.PI / 4; // 45 deg isometric angle
+
+    function updateCameraTransform() {
+      camTarget.x = Math.max(-MAP_SIZE * 0.48, Math.min(MAP_SIZE * 0.48, camTarget.x));
+      camTarget.z = Math.max(-MAP_SIZE * 0.48, Math.min(MAP_SIZE * 0.48, camTarget.z));
+      camera.position.set(
+        camTarget.x - Math.sin(camAngle) * camZoom * 0.85,
+        camZoom * 0.78,
+        camTarget.z + Math.cos(camAngle) * camZoom * 0.85
+      );
+      camera.lookAt(camTarget);
+    }
+    updateCameraTransform();
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x6b8cff, 0.75);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xdff4ff, 1.15);
+    dirLight.position.set(-55, 95, 65);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 10;
+    dirLight.shadow.camera.far = 260;
+    const d = 110;
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+    scene.add(dirLight);
+
+    // Ground Battlefield Plane
+    const groundGeo = new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 36, 36);
+    groundGeo.rotateX(-Math.PI / 2);
+    // Subtle terrain height variations at outer edges
+    const posAttr = groundGeo.attributes.position;
+    for (let i = 0; i < posAttr.count; i++) {
+      const vx = posAttr.getX(i);
+      const vz = posAttr.getZ(i);
+      if (Math.abs(vx) > 82 || Math.abs(vz) > 82) {
+        posAttr.setY(i, 1.5);
+      }
+    }
+    groundGeo.computeVertexNormals();
+
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x0b1326,
+      roughness: 0.88,
+      metalness: 0.22
+    });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.receiveShadow = true;
+    scene.add(groundMesh);
+
+    // Tactical Cyber Grid Overlay
+    const gridHelper = new THREE.GridHelper(MAP_SIZE, 45, 0x00f0ff, 0x16264c);
+    gridHelper.position.y = 0.05;
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity = 0.42;
+    scene.add(gridHelper);
+
+    // Base Territory Pads
+    function createTerritoryPad(x, z, colorHex, size = 34) {
+      const geo = new THREE.RingGeometry(size * 0.46, size * 0.5, 4);
+      geo.rotateX(-Math.PI / 2);
+      geo.rotateY(Math.PI / 4);
+      const mat = new THREE.MeshBasicMaterial({
+        color: colorHex,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.35
+      });
+      const ring = new THREE.Mesh(geo, mat);
+      ring.position.set(x, 0.08, z);
+      scene.add(ring);
+    }
+    createTerritoryPad(-48, 48, FACTIONS.AU.primary, 46);
+    createTerritoryPad(48, -48, FACTIONS.EAGLE.primary, 42);
+    createTerritoryPad(-42, -50, FACTIONS.IRON.primary, 40);
+
+    // Ghost Placement Hologram Mesh
+    const ghostGroup = new THREE.Group();
+    const ghostRingGeo = new THREE.RingGeometry(3.2, 3.8, 32);
+    ghostRingGeo.rotateX(-Math.PI / 2);
+    const ghostRingMat = new THREE.MeshBasicMaterial({ color: 0x00ff9d, side: THREE.DoubleSide });
+    const ghostRing = new THREE.Mesh(ghostRingGeo, ghostRingMat);
+    const ghostBox = new THREE.Mesh(
+      new THREE.BoxGeometry(5, 4, 5),
+      new THREE.MeshBasicMaterial({ color: 0x00ff9d, wireframe: true })
+    );
+    ghostBox.position.y = 2;
+    ghostGroup.add(ghostRing, ghostBox);
+    ghostGroup.visible = false;
+    scene.add(ghostGroup);
+
+    // === 5. 3D MODEL GENERATORS (BUILDINGS, UNITS, ORE) ===
+    function createHealthBarMesh(width = 4.2, height = 0.45) {
+      const group = new THREE.Group();
+      const bg = new THREE.Mesh(
+        new THREE.PlaneGeometry(width, height),
+        new THREE.MeshBasicMaterial({ color: 0x090d16, side: THREE.DoubleSide })
+      );
+      const fgGeo = new THREE.PlaneGeometry(width - 0.16, height - 0.14);
+      fgGeo.translate((width - 0.16) / 2, 0, 0);
+      const fg = new THREE.Mesh(
+        fgGeo,
+        new THREE.MeshBasicMaterial({ color: 0x00ff9d, side: THREE.DoubleSide })
+      );
+      fg.position.x = -(width - 0.16) / 2;
+      fg.position.z = 0.02;
+      group.add(bg, fg);
+      group.rotation.x = -Math.PI / 4;
+      group.rotation.y = -Math.PI / 4;
+      group.userData.fg = fg;
+      return group;
+    }
+
+    function buildStructureMesh(type, faction) {
+      const fInfo = FACTIONS[faction];
+      const group = new THREE.Group();
+
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0x1a243d,
+        roughness: 0.5,
+        metalness: 0.6
+      });
+      const accentMat = new THREE.MeshStandardMaterial({
+        color: fInfo.primary,
+        emissive: fInfo.primary,
+        emissiveIntensity: 0.45,
+        roughness: 0.3,
+        metalness: 0.7
+      });
+      const subMat = new THREE.MeshStandardMaterial({
+        color: fInfo.secondary,
+        emissive: fInfo.secondary,
+        emissiveIntensity: 0.3,
+        roughness: 0.35
+      });
+
+      if (type === 'hq') {
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(9.2, 1.0, 9.2), baseMat);
+        pad.position.y = 0.5;
+        const core = new THREE.Mesh(new THREE.OctahedronGeometry(3.2, 0), accentMat);
+        core.position.y = 4.6;
+        const spire1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 6.5, 1.4), subMat);
+        spire1.position.set(-3.2, 3.2, -3.2);
+        const spire2 = spire1.clone();
+        spire2.position.set(3.2, 3.2, -3.2);
+        const spire3 = spire1.clone();
+        spire3.position.set(-3.2, 3.2, 3.2);
+        const spire4 = spire1.clone();
+        spire4.position.set(3.2, 3.2, 3.2);
+        group.add(pad, core, spire1, spire2, spire3, spire4);
+        group.userData.rotPart = core;
+      } else if (type === 'power') {
+        const pad = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.6, 1.2, 12), baseMat);
+        pad.position.y = 0.6;
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(2.3, 16, 12), accentMat);
+        dome.position.y = 2.0;
+        const torus = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.28, 8, 24), subMat);
+        torus.rotation.x = Math.PI / 2;
+        torus.position.y = 2.4;
+        group.add(pad, dome, torus);
+        group.userData.rotPart = torus;
+      } else if (type === 'refinery') {
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(7.8, 1.2, 7.2), baseMat);
+        pad.position.y = 0.6;
+        const silo1 = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 5.2, 12), accentMat);
+        silo1.position.set(-2.2, 2.8, -1.6);
+        const silo2 = silo1.clone();
+        silo2.position.set(0.2, 2.8, -1.6);
+        const bay = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.6, 3.8), subMat);
+        bay.position.set(2.0, 1.8, 1.2);
+        group.add(pad, silo1, silo2, bay);
+      } else if (type === 'factory') {
+        const body = new THREE.Mesh(new THREE.BoxGeometry(8.2, 3.4, 7.6), baseMat);
+        body.position.y = 1.7;
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.8, 6.2), accentMat);
+        roof.position.y = 3.8;
+        const gate = new THREE.Mesh(new THREE.BoxGeometry(3.8, 2.4, 0.6), subMat);
+        gate.position.set(0, 1.2, 3.8);
+        const Dish = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.8, 6), accentMat);
+        Dish.position.set(-2.2, 5.0, -1.5);
+        group.add(body, roof, gate, Dish);
+        group.userData.rotPart = Dish;
+      } else if (type === 'tower') {
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.3, 1.8, 8), baseMat);
+        base.position.y = 0.9;
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 1.1, 5.2, 8), subMat);
+        mast.position.y = 3.6;
+        const emitter = new THREE.Mesh(new THREE.OctahedronGeometry(1.35, 0), accentMat);
+        emitter.position.y = 6.8;
+        group.add(base, mast, emitter);
+        group.userData.rotPart = emitter;
+      } else if (type === 'recycler') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(7.2, 1.6, 7.2), baseMat);
+        base.position.y = 0.8;
+        const grinderMat = new THREE.MeshStandardMaterial({
+          color: 0x00ff9d,
+          emissive: 0x00ff9d,
+          emissiveIntensity: 0.55
+        });
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.45, 8, 20), grinderMat);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 2.2;
+        const blade1 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.35, 0.6), subMat);
+        blade1.position.y = 2.2;
+        const blade2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.35, 4.0), subMat);
+        blade2.position.y = 2.2;
+        const rotor = new THREE.Group();
+        rotor.add(blade1, blade2);
+        group.add(base, ring, rotor);
+        group.userData.rotPart = rotor;
+      }
+
+      group.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+
+      return group;
+    }
+
+    function buildUnitMesh(type, faction) {
+      const fInfo = FACTIONS[faction];
+      const group = new THREE.Group();
+
+      const hullMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.45,
+        metalness: 0.65
+      });
+      const primaryMat = new THREE.MeshStandardMaterial({
+        color: fInfo.primary,
+        emissive: fInfo.primary,
+        emissiveIntensity: 0.45,
+        roughness: 0.3,
+        metalness: 0.7
+      });
+      const secondaryMat = new THREE.MeshStandardMaterial({
+        color: fInfo.secondary,
+        emissive: fInfo.secondary,
+        emissiveIntensity: 0.35
+      });
+
+      if (type === 'kamikaze') {
+        const core = new THREE.Mesh(new THREE.ConeGeometry(0.95, 2.2, 4), primaryMat);
+        core.rotation.x = Math.PI / 2;
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.14, 0.7), secondaryMat);
+        const warhead = new THREE.Mesh(
+          new THREE.SphereGeometry(0.45, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        warhead.position.z = 1.0;
+        group.add(core, wing, warhead);
+      } else if (type === 'prism') {
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.0, 3.4), hullMat);
+        chassis.position.y = 0.6;
+        const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.8, 3.6), secondaryMat);
+        trackL.position.set(-1.35, 0.5, 0);
+        const trackR = trackL.clone();
+        trackR.position.x = 1.35;
+        const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.15, 0.8, 8), primaryMat);
+        turret.position.y = 1.4;
+        const crystal = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.75, 0),
+          new THREE.MeshBasicMaterial({ color: 0x00ffff })
+        );
+        crystal.position.set(0, 2.15, 0.3);
+        group.add(chassis, trackL, trackR, turret, crystal);
+        group.userData.rotPart = crystal;
+      } else if (type === 'hackrover') {
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.0, 3.0), hullMat);
+        body.position.y = 0.7;
+        const brainMat = new THREE.MeshStandardMaterial({
+          color: 0xb829ff,
+          emissive: 0xb829ff,
+          emissiveIntensity: 0.75
+        });
+        const dish = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.22, 8, 18), brainMat);
+        dish.rotation.x = Math.PI / 2;
+        dish.position.y = 1.9;
+        const orb = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 12), primaryMat);
+        orb.position.y = 1.9;
+        group.add(body, dish, orb);
+        group.userData.rotPart = dish;
+      } else if (type === 'mothership') {
+        const hull = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 6.8, 14), primaryMat);
+        hull.rotation.x = Math.PI / 2;
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(2.2, 14, 12), secondaryMat);
+        nose.position.z = 3.2;
+        const tail = nose.clone();
+        tail.position.z = -3.2;
+        const gondola = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 4.2), hullMat);
+        gondola.position.y = -2.1;
+        const finV = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.2, 2.2), secondaryMat);
+        finV.position.set(0, 1.5, -2.8);
+        group.add(hull, nose, tail, gondola, finV);
+      } else if (type === 'harvester') {
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.7, 1.35, 3.5), hullMat);
+        body.position.y = 0.8;
+        const bin = new THREE.Mesh(
+          new THREE.BoxGeometry(2.3, 1.1, 2.0),
+          new THREE.MeshStandardMaterial({ color: 0x00ff9d, emissive: 0x00ff9d, emissiveIntensity: 0.35 })
+        );
+        bin.position.set(0, 1.6, -0.5);
+        const scoop = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 2.8, 8), primaryMat);
+        scoop.rotation.z = Math.PI / 2;
+        scoop.position.set(0, 0.65, 2.0);
+        group.add(body, bin, scoop);
+        group.userData.rotPart = scoop;
+      }
+
+      group.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+
+      return group;
+    }
+
+    // === 6. ENTITY SPAWNING & MANAGEMENT ===
+    function spawnOreCluster(cx, cz, count = 8) {
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = 2.5 + Math.random() * 6.5;
+        const x = cx + Math.cos(angle) * dist;
+        const z = cz + Math.sin(angle) * dist;
+
+        const crystalGroup = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x00ff9d,
+          emissive: 0x00d68f,
+          emissiveIntensity: 0.7,
+          roughness: 0.2
+        });
+        const mainCrystal = new THREE.Mesh(new THREE.ConeGeometry(0.85, 2.7, 5), mat);
+        mainCrystal.position.y = 1.35;
+        const subCrystal = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.8, 5), mat);
+        subCrystal.position.set(0.6, 0.9, 0.3);
+        subCrystal.rotation.z = -0.35;
+        crystalGroup.add(mainCrystal, subCrystal);
+        crystalGroup.position.set(x, 0, z);
+        scene.add(crystalGroup);
+
+        state.oreNodes.push({
+          id: state.nextId++,
+          x,
+          z,
+          amount: 1000,
+          maxAmount: 1000,
+          mesh: crystalGroup
+        });
+      }
+    }
+
+    function spawnBuilding(type, faction, x, z) {
+      const def = BUILDING_CATALOG.find((b) => b.type === type);
+      if (!def) return null;
+
+      const root = new THREE.Group();
+      root.position.set(x, 0, z);
+
+      const model = buildStructureMesh(type, faction);
+      root.add(model);
+
+      // Selection Ring
+      const selGeo = new THREE.RingGeometry(def.radius * 0.92, def.radius * 1.06, 32);
+      selGeo.rotateX(-Math.PI / 2);
+      const selMat = new THREE.MeshBasicMaterial({
+        color: FACTIONS[faction].primary,
+        side: THREE.DoubleSide
+      });
+      const selRing = new THREE.Mesh(selGeo, selMat);
+      selRing.position.y = 0.12;
+      selRing.visible = false;
+      root.add(selRing);
+
+      // Health Bar
+      const hpBar = createHealthBarMesh(6.2, 0.55);
+      hpBar.position.set(0, 8.2, 0);
+      root.add(hpBar);
+
+      scene.add(root);
+
+      const building = {
+        id: state.nextId++,
+        isBuilding: true,
+        type,
+        name: def.name,
+        faction,
+        x,
+        z,
+        hp: def.hp,
+        maxHp: def.hp,
+        radius: def.radius,
+        power: def.power || 0,
+        range: def.range || 0,
+        damage: def.damage || 0,
+        cooldown: def.cooldown || 1,
+        fireTimer: 0,
+        mesh: root,
+        model,
+        selRing,
+        hpBar
+      };
+
+      state.buildings.push(building);
+      recalcPower();
+
+      // If Refinery is built, spawn a free Harvester right next to it
+      if (type === 'refinery') {
+        spawnUnit('harvester', faction, x + 5.5, z + 4.5);
+      }
+
+      return building;
+    }
+
+    function spawnUnit(type, faction, x, z) {
+      const def = UNIT_CATALOG.find((u) => u.type === type);
+      if (!def) return null;
+
+      const root = new THREE.Group();
+      const yPos = def.flying ? def.flyHeight : 0;
+      root.position.set(x, yPos, z);
+
+      const model = buildUnitMesh(type, faction);
+      root.add(model);
+
+      // Selection Ring on ground
+      const selGeo = new THREE.RingGeometry(1.9, 2.35, 24);
+      selGeo.rotateX(-Math.PI / 2);
+      const selMat = new THREE.MeshBasicMaterial({
+        color: 0x00ff9d,
+        side: THREE.DoubleSide
+      });
+      const selRing = new THREE.Mesh(selGeo, selMat);
+      selRing.position.y = def.flying ? -yPos + 0.15 : 0.15;
+      selRing.visible = false;
+      root.add(selRing);
+
+      // Hacked Indicator Crown (when stolen by A.U. Hack-Rover)
+      const crownGeo = new THREE.OctahedronGeometry(0.55, 0);
+      const crownMat = new THREE.MeshBasicMaterial({ color: 0xb829ff, wireframe: true });
+      const crownMesh = new THREE.Mesh(crownGeo, crownMat);
+      crownMesh.position.y = 3.8;
+      crownMesh.visible = false;
+      root.add(crownMesh);
+
+      // Health Bar
+      const hpBar = createHealthBarMesh(3.6, 0.42);
+      hpBar.position.set(0, 3.1, 0);
+      root.add(hpBar);
+
+      scene.add(root);
+
+      const unit = {
+        id: state.nextId++,
+        isUnit: true,
+        type,
+        name: def.name,
+        faction,
+        wasHacked: false,
+        x,
+        z,
+        y: yPos,
+        hp: def.hp,
+        maxHp: def.hp,
+        speed: def.speed,
+        range: def.range,
+        damage: def.damage,
+        cooldown: def.cooldown,
+        flying: def.flying,
+        flyHeight: def.flyHeight || 0,
+        recycleValue: def.recycleValue || Math.round(def.cost * 0.75),
+        fireTimer: 0,
+        hackProgress: 0,
+        targetPos: null,
+        targetEntity: null,
+        recycleTarget: null,
+        harvestState: type === 'harvester' ? 'seeking_ore' : null,
+        cargo: 0,
+        maxCargo: 450,
+        mesh: root,
+        model,
+        selRing,
+        crownMesh,
+        hpBar
+      };
+
+      state.units.push(unit);
+      return unit;
+    }
+
+    function convertUnitFaction(unit, newFaction) {
+      unit.faction = newFaction;
+      unit.wasHacked = true;
+      unit.targetEntity = null;
+      unit.targetPos = null;
+
+      // Rebuild mesh with new faction colors
+      unit.mesh.remove(unit.model);
+      unit.model = buildUnitMesh(unit.type, newFaction);
+      unit.mesh.add(unit.model);
+      unit.crownMesh.visible = true;
+
+      spawnParticles(unit.x, unit.y + 1.5, unit.z, 0xb829ff, 18);
+      sfx.playHackWave();
+      showEvaAlert(`🧠 แฮ็กยึดสำเร็จ! ${unit.name} กลายเป็นยูนิตฝ่าย A.U. แล้ว! (สั่งรบต่อหรือส่งเข้า Cyber Recycler ได้เลย)`, 'hack');
+      updateInspectorUI();
+    }
+
+    // === 7. VISUAL FX (LASERS, HACK WAVES, EXPLOSIONS) ===
+    function spawnBeam(startVec, endVec, colorHex, duration = 0.22) {
+      const points = [startVec.clone(), endVec.clone()];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({
+        color: colorHex,
+        linewidth: 3,
+        transparent: true,
+        opacity: 1
+      });
+      const line = new THREE.Line(geo, mat);
+      scene.add(line);
+      state.beams.push({ line, mat, timer: duration, maxTimer: duration });
+    }
+
+    function spawnParticles(x, y, z, colorHex, count = 14) {
+      for (let i = 0; i < count; i++) {
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(0.55, 0.55, 0.55),
+          new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 1 })
+        );
+        mesh.position.set(x, y, z);
+        const vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 18,
+          Math.random() * 14 + 3,
+          (Math.random() - 0.5) * 18
+        );
+        scene.add(mesh);
+        state.particles.push({ mesh, vel, timer: 0.55, maxTimer: 0.55 });
+      }
+    }
+
+    // === 8. POWER & ECONOMY ===
+    function recalcPower() {
+      let prod = 0;
+      let cons = 0;
+      for (const b of state.buildings) {
+        if (b.faction === 'AU' && b.hp > 0) {
+          if (b.power > 0) prod += b.power;
+          else cons += Math.abs(b.power);
+        }
+      }
+      state.powerProduced = prod;
+      state.powerConsumed = cons;
+      const wasLow = state.lowPower;
+      state.lowPower = prod < cons;
+      if (state.lowPower && !wasLow) {
+        showEvaAlert('⚠️ พลังงานไฟฟ้าไม่พอ (LOW POWER)! ป้อม Signal Override Tower ทำงานช้าลง โปรดสร้าง Fusion Power Plant!', 'warn');
+        sfx.playSiren();
+      }
+      updateTopHud();
+    }
+
+    function addCredits(amount) {
+      state.credits = Math.max(0, Math.round(state.credits + amount));
+      updateTopHud();
+      refreshBuildButtonsState();
+    }
+
+    // === 9. UI & HUD RENDERING ===
+    const hudCredits = document.getElementById('hud-credits');
+    const hudPower = document.getElementById('hud-power');
+    const powerPill = document.getElementById('power-pill');
+    const evaAlertEl = document.getElementById('eva-alert');
+    let evaTimeout = null;
+
+    function showEvaAlert(msg, style = 'normal') {
+      evaAlertEl.textContent = msg;
+      evaAlertEl.className = 'show';
+      if (style === 'warn') evaAlertEl.classList.add('warn');
+      if (style === 'hack') evaAlertEl.classList.add('hack');
+      if (evaTimeout) clearTimeout(evaTimeout);
+      evaTimeout = setTimeout(() => {
+        evaAlertEl.classList.remove('show');
+      }, 4200);
+    }
+
+    function updateTopHud() {
+      hudCredits.textContent = `$${state.credits.toLocaleString()}`;
+      hudPower.textContent = `${state.powerProduced} / ${state.powerConsumed}`;
+      if (state.lowPower) {
+        hudPower.className = 'res-val power-low';
+        powerPill.classList.add('low-power');
+      } else {
+        hudPower.className = 'res-val power-ok';
+        powerPill.classList.remove('low-power');
+      }
+    }
+
+    // Render Sidebar Build Cards
+    const listBuildingsEl = document.getElementById('list-buildings');
+    const listUnitsEl = document.getElementById('list-units');
+
+    function renderSidebarMenus() {
+      listBuildingsEl.innerHTML = '';
+      BUILDING_CATALOG.forEach((b) => {
+        const card = document.createElement('div');
+        card.className = 'cameo-card';
+        card.dataset.btype = b.type;
+        const pwrText = b.power >= 0 ? `+${b.power} ⚡` : `${b.power} ⚡`;
+        const pwrClass = b.power >= 0 ? 'power-plus' : 'power-minus';
+        card.innerHTML = `
+          <div class="cameo-icon">${b.icon}</div>
+          <div class="cameo-body">
+            <div class="cameo-top">
+              <span class="cameo-title">${b.name}</span>
+              <span class="cameo-cost">$${b.cost}</span>
+            </div>
+            <div class="cameo-desc">${b.desc}</div>
+            <span class="cameo-power ${pwrClass}">${pwrText}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => startBuildingPlacement(b.type));
+        listBuildingsEl.appendChild(card);
+      });
+
+      listUnitsEl.innerHTML = '';
+      UNIT_CATALOG.filter((u) => !u.hiddenFromMenu).forEach((u) => {
+        const card = document.createElement('div');
+        card.className = 'cameo-card';
+        card.dataset.utype = u.type;
+        card.innerHTML = `
+          <div class="cameo-icon">${u.icon}</div>
+          <div class="cameo-body">
+            <div class="cameo-top">
+              <span class="cameo-title">${u.name}</span>
+              <span class="cameo-cost">$${u.cost}</span>
+            </div>
+            <div class="cameo-desc">${u.desc}</div>
+            <span class="cameo-power power-plus">♻️ รีไซเคิลได้ $${u.recycleValue}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => produceUnitFromFactory(u.type));
+        listUnitsEl.appendChild(card);
+      });
+
+      refreshBuildButtonsState();
+    }
+
+    function refreshBuildButtonsState() {
+      const hasFactory = state.buildings.some((b) => b.faction === 'AU' && b.type === 'factory' && b.hp > 0);
+
+      document.querySelectorAll('#list-buildings .cameo-card').forEach((card) => {
+        const btype = card.dataset.btype;
+        const def = BUILDING_CATALOG.find((x) => x.type === btype);
+        card.classList.toggle('disabled', state.credits < def.cost);
+        card.classList.toggle('active-place', state.placingBuildingType === btype);
+      });
+
+      document.querySelectorAll('#list-units .cameo-card').forEach((card) => {
+        const utype = card.dataset.utype;
+        const def = UNIT_CATALOG.find((x) => x.type === utype);
+        card.classList.toggle('disabled', state.credits < def.cost || !hasFactory);
+      });
+    }
+
+    // Tab switching
+    const tabBuildingsBtn = document.getElementById('tab-buildings');
+    const tabUnitsBtn = document.getElementById('tab-units');
+
+    tabBuildingsBtn.addEventListener('click', () => {
+      sfx.playUiClick();
+      tabBuildingsBtn.classList.add('active');
+      tabUnitsBtn.classList.remove('active');
+      listBuildingsEl.style.display = 'flex';
+      listUnitsEl.style.display = 'none';
+    });
+
+    tabUnitsBtn.addEventListener('click', () => {
+      sfx.playUiClick();
+      tabUnitsBtn.classList.add('active');
+      tabBuildingsBtn.classList.remove('active');
+      listUnitsEl.style.display = 'flex';
+      listBuildingsEl.style.display = 'none';
+    });
+
+    // Building Placement Flow
+    const placementBanner = document.getElementById('placement-banner');
+    const placementText = document.getElementById('placement-text');
+
+    function startBuildingPlacement(btype) {
+      sfx.playUiClick();
+      const def = BUILDING_CATALOG.find((b) => b.type === btype);
+      if (!def) return;
+      if (state.credits < def.cost) {
+        showEvaAlert(`⚠️ เงิน Credits ไม่พอสำหรับ ${def.name} (ต้องการ $${def.cost})`, 'warn');
+        return;
+      }
+      state.placingBuildingType = btype;
+      ghostGroup.visible = true;
+      placementText.textContent = `🏗️ กำลังวาง [${def.name}] — คลิก/แตะบนพื้นสนามรบเพื่อก่อสร้าง`;
+      placementBanner.classList.add('active');
+      refreshBuildButtonsState();
+    }
+
+    function cancelBuildingPlacement() {
+      state.placingBuildingType = null;
+      ghostGroup.visible = false;
+      placementBanner.classList.remove('active');
+      refreshBuildButtonsState();
+    }
+
+    document.getElementById('btn-cancel-place').addEventListener('click', cancelBuildingPlacement);
+
+    function tryConfirmBuildingPlacement(worldX, worldZ) {
+      if (!state.placingBuildingType) return false;
+      const def = BUILDING_CATALOG.find((b) => b.type === state.placingBuildingType);
+      if (!def) return false;
+
+      if (state.credits < def.cost) {
+        showEvaAlert('⚠️ เงิน Credits ไม่เพียงพอ!', 'warn');
+        cancelBuildingPlacement();
+        return true;
+      }
+
+      // Check collision with existing buildings
+      for (const b of state.buildings) {
+        const dist = Math.hypot(b.x - worldX, b.z - worldZ);
+        if (dist < b.radius + def.radius + 1.5) {
+          showEvaAlert('⚠️ พื้นที่นี้แคบเกินไป กรุณาวางห่างจากอาคารอื่นเล็กน้อย', 'warn');
+          return true;
+        }
+      }
+
+      // Check proximity to friendly building (allow anywhere if no buildings exist)
+      const myBuildings = state.buildings.filter((b) => b.faction === 'AU');
+      if (myBuildings.length > 0) {
+        const nearFriendly = myBuildings.some((b) => Math.hypot(b.x - worldX, b.z - worldZ) < 48);
+        if (!nearFriendly) {
+          showEvaAlert('⚠️ กรุณาก่อสร้างในรัศมีโครงข่ายฐานทัพ A.U. ของคุณ!', 'warn');
+          return true;
+        }
+      }
+
+      addCredits(-def.cost);
+      spawnBuilding(def.type, 'AU', worldX, worldZ);
+      spawnParticles(worldX, 2, worldZ, 0x00f0ff, 16);
+      sfx.playUiClick();
+      showEvaAlert(`✅ ก่อสร้าง ${def.name} เสร็จสมบูรณ์!`);
+      cancelBuildingPlacement();
+      return true;
+    }
+
+    // Produce Unit from Cyber & Drone Factory
+    function produceUnitFromFactory(utype) {
+      sfx.playUiClick();
+      const def = UNIT_CATALOG.find((u) => u.type === utype);
+      if (!def) return;
+
+      const factories = state.buildings.filter((b) => b.faction === 'AU' && b.type === 'factory' && b.hp > 0);
+      if (factories.length === 0) {
+        showEvaAlert('⚠️ ต้องสร้างโรงงาน Cyber & Drone Factory ก่อนจึงจะผลิตยูนิตได้!', 'warn');
+        return;
+      }
+
+      if (state.credits < def.cost) {
+        showEvaAlert(`⚠️ เงิน Credits ไม่พอผลิต ${def.name} (ต้องการ $${def.cost})`, 'warn');
+        return;
+      }
+
+      addCredits(-def.cost);
+      const fac = factories[Math.floor(Math.random() * factories.length)];
+      const spawnX = fac.x + (Math.random() - 0.5) * 6 + 6;
+      const spawnZ = fac.z + (Math.random() - 0.5) * 6 + 6;
+      const u = spawnUnit(utype, 'AU', spawnX, spawnZ);
+      u.targetPos = { x: spawnX + 5, z: spawnZ - 4 };
+      spawnParticles(spawnX, u.y + 1, spawnZ, 0x00f0ff, 12);
+      showEvaAlert(`🤖 ผลิต ${def.name} พร้อมเข้าประจำการ!`);
+    }
+
+    // === 10. SELECTION, BOX SELECT, TOUCH MODES & RECYCLER COMMANDS ===
+    const selectionBoxEl = document.getElementById('selection-box');
+    const raycaster = new THREE.Raycaster();
+    const pointerNDC = new THREE.Vector2();
+
+    function getGroundIntersection(clientX, clientY) {
+      pointerNDC.x = (clientX / window.innerWidth) * 2 - 1;
+      pointerNDC.y = -(clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(pointerNDC, camera);
+      const hits = raycaster.intersectObject(groundMesh);
+      if (hits.length > 0) {
+        return hits[0].point;
+      }
+      return null;
+    }
+
+    function pickEntityAtScreen(clientX, clientY) {
+      const pt = getGroundIntersection(clientX, clientY);
+      if (!pt) return null;
+
+      // Check units first (including flying units projected to screen distance)
+      let bestUnit = null;
+      let bestDistPx = 38;
+      for (const u of state.units) {
+        if (u.hp <= 0) continue;
+        const screenPos = worldToScreen(u.x, u.y + 1, u.z);
+        const d = Math.hypot(screenPos.x - clientX, screenPos.y - clientY);
+        if (d < bestDistPx) {
+          bestDistPx = d;
+          bestUnit = u;
+        }
+      }
+      if (bestUnit) return bestUnit;
+
+      // Check buildings
+      for (const b of state.buildings) {
+        if (b.hp <= 0) continue;
+        if (Math.hypot(b.x - pt.x, b.z - pt.z) <= b.radius + 1.2) {
+          return b;
+        }
+      }
+      return null;
+    }
+
+    function worldToScreen(wx, wy, wz) {
+      const v = new THREE.Vector3(wx, wy, wz);
+      v.project(camera);
+      return {
+        x: (v.x * 0.5 + 0.5) * window.innerWidth,
+        y: (-(v.y * 0.5) + 0.5) * window.innerHeight
+      };
+    }
+
+    function clearSelection() {
+      state.selectedUnits.forEach((u) => {
+        if (u.selRing) u.selRing.visible = false;
+      });
+      state.selectedUnits = [];
+      if (state.selectedBuilding && state.selectedBuilding.selRing) {
+        state.selectedBuilding.selRing.visible = false;
+      }
+      state.selectedBuilding = null;
+      updateInspectorUI();
+    }
+
+    function selectSingleEntity(ent) {
+      clearSelection();
+      if (!ent) return;
+      if (ent.isUnit && ent.faction === 'AU') {
+        state.selectedUnits = [ent];
+        ent.selRing.visible = true;
+      } else if (ent.isBuilding) {
+        state.selectedBuilding = ent;
+        ent.selRing.visible = true;
+      }
+      sfx.playUiClick();
+      updateInspectorUI();
+    }
+
+    function selectUnitsInBox(x1, y1, x2, y2) {
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+
+      clearSelection();
+      for (const u of state.units) {
+        if (u.faction !== 'AU' || u.hp <= 0) continue;
+        const sp = worldToScreen(u.x, u.y, u.z);
+        if (sp.x >= minX && sp.x <= maxX && sp.y >= minY && sp.y <= maxY) {
+          state.selectedUnits.push(u);
+          u.selRing.visible = true;
+        }
+      }
+      if (state.selectedUnits.length > 0) {
+        sfx.playUiClick();
+      }
+      updateInspectorUI();
+    }
+
+    function updateInspectorUI() {
+      const titleEl = document.getElementById('insp-title');
+      const countEl = document.getElementById('insp-count');
+      const descEl = document.getElementById('insp-desc');
+
+      if (state.selectedUnits.length === 1) {
+        const u = state.selectedUnits[0];
+        titleEl.textContent = u.wasHacked ? `🧠 ${u.name} (Hacked)` : u.name;
+        countEl.textContent = `HP ${Math.ceil(u.hp)}/${u.maxHp}`;
+        descEl.textContent = `คลิกขวาที่ศัตรูเพื่อโจมตี/แฮ็ก หรือส่งเข้าโรงบด Cyber Recycler เพื่อรับเงินสด $${u.recycleValue}`;
+      } else if (state.selectedUnits.length > 1) {
+        const totalRecycle = state.selectedUnits.reduce((acc, u) => acc + u.recycleValue, 0);
+        titleEl.textContent = 'A.U. Strike Group';
+        countEl.textContent = `${state.selectedUnits.length} UNITS`;
+        descEl.textContent = `กองกำลังพร้อมรบ! (มูลค่ารีไซเคิลรวม $${totalRecycle})`;
+      } else if (state.selectedBuilding) {
+        const b = state.selectedBuilding;
+        titleEl.textContent = b.name;
+        countEl.textContent = `HP ${Math.ceil(b.hp)}/${b.maxHp}`;
+        descEl.textContent = b.type === 'recycler'
+          ? '♻️ โรงบดรีไซเคิล: สั่งยูนิตเดินเข้าตึกนี้เพื่อย่อยสลายเป็นเงินสด Credits ทันที!'
+          : `โครงสร้างฝ่าย ${FACTIONS[b.faction].name}`;
+      } else {
+        titleEl.textContent = 'A.U. Tactical Cursor';
+        countEl.textContent = '0 SELECTED';
+        descEl.textContent = 'ลากเมาส์คลุมเลือกยูนิต หรือใช้ปุ่มโหมดสั่งการด้านล่างสำหรับจอสัมผัส';
+      }
+    }
+
+    // Issue tactical order (Move, Attack/Hack, or Enter Cyber Recycler)
+    function issueOrderAtScreen(clientX, clientY, forceRecycle = false) {
+      if (state.selectedUnits.length === 0) {
+        showEvaAlert('ℹ️ กรุณาเลือกยูนิตฝ่าย A.U. ก่อนสั่งการ!');
+        return;
+      }
+
+      const targetEnt = pickEntityAtScreen(clientX, clientY);
+      const groundPt = getGroundIntersection(clientX, clientY);
+
+      // 1. Check if ordering into Cyber Recycler
+      if (forceRecycle || (targetEnt && targetEnt.isBuilding && targetEnt.faction === 'AU' && targetEnt.type === 'recycler')) {
+        const recycler = (targetEnt && targetEnt.type === 'recycler')
+          ? targetEnt
+          : state.buildings.find((b) => b.faction === 'AU' && b.type === 'recycler' && b.hp > 0);
+
+        if (!recycler) {
+          showEvaAlert('⚠️ คุณยังไม่ได้สร้างตึก Cyber Recycler! กรุณาสร้างจากเมนูด้านขวาก่อน', 'warn');
+          return;
+        }
+
+        state.selectedUnits.forEach((u) => {
+          u.recycleTarget = recycler;
+          u.targetEntity = null;
+          u.targetPos = { x: recycler.x, z: recycler.z };
+        });
+        spawnParticles(recycler.x, 2.5, recycler.z, 0x00ff9d, 10);
+        sfx.playUiClick();
+        showEvaAlert(`♻️ สั่งยูนิต ${state.selectedUnits.length} ลำมุ่งหน้าเข้าโรงบด Cyber Recycler เพื่อแลกเงินสด!`);
+        return;
+      }
+
+      // 2. Check if ordering Attack or Hack on Enemy Entity
+      if (targetEnt && targetEnt.faction !== 'AU') {
+        state.selectedUnits.forEach((u) => {
+          u.targetEntity = targetEnt;
+          u.recycleTarget = null;
+          u.targetPos = null;
+        });
+        spawnParticles(targetEnt.x, 2, targetEnt.z, 0xff2a4b, 8);
+        sfx.playUiClick();
+        return;
+      }
+
+      // 3. Standard Ground Move Formation
+      if (groundPt) {
+        const count = state.selectedUnits.length;
+        const cols = Math.ceil(Math.sqrt(count));
+        const spacing = 4.2;
+        state.selectedUnits.forEach((u, idx) => {
+          const r = Math.floor(idx / cols);
+          const c = idx % cols;
+          const ox = (c - (cols - 1) / 2) * spacing;
+          const oz = (r - (cols - 1) / 2) * spacing;
+          u.targetPos = { x: groundPt.x + ox, z: groundPt.z + oz };
+          u.targetEntity = null;
+          u.recycleTarget = null;
+          if (u.type === 'harvester') u.harvestState = 'manual';
+        });
+        spawnParticles(groundPt.x, 0.5, groundPt.z, 0x00f0ff, 6);
+        sfx.playUiClick();
+      }
+    }
+
+    // Quick Action Buttons in Inspector
+    document.getElementById('btn-select-all').addEventListener('click', () => {
+      clearSelection();
+      for (const u of state.units) {
+        if (u.faction === 'AU' && u.hp > 0 && u.type !== 'harvester') {
+          state.selectedUnits.push(u);
+          u.selRing.visible = true;
+        }
+      }
+      sfx.playUiClick();
+      updateInspectorUI();
+      showEvaAlert(`⚔️ เลือกกองกำลังรบ A.U. ทั้งหมด (${state.selectedUnits.length} ยูนิต)`);
+    });
+
+    document.getElementById('btn-send-recycle').addEventListener('click', () => {
+      issueOrderAtScreen(0, 0, true);
+    });
+
+    // Touch & Command Mode Switching
+    document.querySelectorAll('.mode-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        sfx.playUiClick();
+        state.commandMode = btn.dataset.mode;
+        document.querySelectorAll('.mode-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // === 11. POINTER (MOUSE + TOUCH) & KEYBOARD INPUT HANDLERS ===
+    let isPointerDown = false;
+    let pointerButton = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDraggingBox = false;
+    let isPanningCam = false;
+    let lastPanX = 0;
+    let lastPanY = 0;
+
+    renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      sfx.init();
+      isPointerDown = true;
+      pointerButton = e.button;
+      startX = e.clientX;
+      startY = e.clientY;
+      lastPanX = e.clientX;
+      lastPanY = e.clientY;
+
+      // If placing a building
+      if (state.placingBuildingType) {
+        if (e.button === 2) {
+          cancelBuildingPlacement();
+          isPointerDown = false;
+          return;
+        }
+        const pt = getGroundIntersection(e.clientX, e.clientY);
+        if (pt) {
+          tryConfirmBuildingPlacement(pt.x, pt.z);
+        }
+        isPointerDown = false;
+        return;
+      }
+
+      // Middle click or Pan mode
+      if (e.button === 1 || state.commandMode === 'pan') {
+        isPanningCam = true;
+        return;
+      }
+
+      // Right click on PC issues immediate command
+      if (e.button === 2) {
+        issueOrderAtScreen(e.clientX, e.clientY, false);
+        isPointerDown = false;
+        return;
+      }
+
+      // Left click or Touch in Move/Attack or Recycle mode
+      if (state.commandMode === 'move_attack') {
+        issueOrderAtScreen(e.clientX, e.clientY, false);
+        isPointerDown = false;
+        return;
+      }
+
+      if (state.commandMode === 'recycle') {
+        issueOrderAtScreen(e.clientX, e.clientY, true);
+        isPointerDown = false;
+        return;
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      // Update building placement hologram position
+      if (state.placingBuildingType) {
+        const pt = getGroundIntersection(e.clientX, e.clientY);
+        if (pt) {
+          ghostGroup.position.set(pt.x, 0, pt.z);
+        }
+      }
+
+      if (!isPointerDown) return;
+
+      if (isPanningCam) {
+        const dx = e.clientX - lastPanX;
+        const dy = e.clientY - lastPanY;
+        lastPanX = e.clientX;
+        lastPanY = e.clientY;
+        const panFactor = camZoom * 0.0018;
+        camTarget.x -= (dx * Math.cos(camAngle) + dy * Math.sin(camAngle)) * panFactor;
+        camTarget.z -= (dy * Math.cos(camAngle) - dx * Math.sin(camAngle)) * panFactor;
+        updateCameraTransform();
+        return;
+      }
+
+      // Box selection drag in Select mode
+      if (pointerButton === 0 && state.commandMode === 'select') {
+        const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+        if (dist > 10) {
+          isDraggingBox = true;
+          selectionBoxEl.style.display = 'block';
+          const left = Math.min(startX, e.clientX);
+          const top = Math.min(startY, e.clientY);
+          const width = Math.abs(e.clientX - startX);
+          const height = Math.abs(e.clientY - startY);
+          selectionBoxEl.style.left = `${left}px`;
+          selectionBoxEl.style.top = `${top}px`;
+          selectionBoxEl.style.width = `${width}px`;
+          selectionBoxEl.style.height = `${height}px`;
+        }
+      }
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
+
+      if (isPanningCam) {
+        isPanningCam = false;
+        return;
+      }
+
+      if (isDraggingBox) {
+        isDraggingBox = false;
+        selectionBoxEl.style.display = 'none';
+        selectUnitsInBox(startX, startY, e.clientX, e.clientY);
+        return;
+      }
+
+      // Single Click / Tap in Select Mode
+      if (pointerButton === 0 && state.commandMode === 'select') {
+        const ent = pickEntityAtScreen(e.clientX, e.clientY);
+        if (ent) {
+          // If player already has units selected and clicks an enemy or Cyber Recycler, execute smart action
+          if (state.selectedUnits.length > 0 && ent.faction !== 'AU') {
+            issueOrderAtScreen(e.clientX, e.clientY, false);
+            return;
+          }
+          if (state.selectedUnits.length > 0 && ent.isBuilding && ent.faction === 'AU' && ent.type === 'recycler') {
+            issueOrderAtScreen(e.clientX, e.clientY, true);
+            return;
+          }
+          selectSingleEntity(ent);
+        } else {
+          clearSelection();
+        }
+      }
+    });
+
+    // Wheel Zoom
+    renderer.domElement.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      camZoom = Math.max(38, Math.min(135, camZoom + e.deltaY * 0.05));
+      updateCameraTransform();
+    }, { passive: false });
+
+    // Camera UI Buttons
+    document.getElementById('cam-home').addEventListener('click', () => {
+      sfx.playUiClick();
+      const myHq = state.buildings.find((b) => b.faction === 'AU' && b.type === 'hq');
+      if (myHq) {
+        camTarget.set(myHq.x, 0, myHq.z);
+      } else {
+        camTarget.set(-45, 0, 45);
+      }
+      updateCameraTransform();
+    });
+
+    document.getElementById('cam-zoom-in').addEventListener('click', () => {
+      sfx.playUiClick();
+      camZoom = Math.max(38, camZoom - 12);
+      updateCameraTransform();
+    });
+
+    document.getElementById('cam-zoom-out').addEventListener('click', () => {
+      sfx.playUiClick();
+      camZoom = Math.min(135, camZoom + 12);
+      updateCameraTransform();
+    });
+
+    // Keyboard Controls
+    const keysPressed = {};
+    window.addEventListener('keydown', (e) => {
+      keysPressed[e.key.toLowerCase()] = true;
+      if (e.key === 'Escape') {
+        cancelBuildingPlacement();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      keysPressed[e.key.toLowerCase()] = false;
+    });
+
+    // Radar Minimap Click to Jump Camera
+    const radarCanvas = document.getElementById('radar-canvas');
+    const radarCtx = radarCanvas.getContext('2d');
+
+    function jumpCameraFromRadar(e) {
+      const rect = radarCanvas.getBoundingClientRect();
+      const rx = (e.clientX - rect.left) / rect.width;
+      const rz = (e.clientY - rect.top) / rect.height;
+      camTarget.x = (rx - 0.5) * MAP_SIZE;
+      camTarget.z = (rz - 0.5) * MAP_SIZE;
+      updateCameraTransform();
+    }
+
+    radarCanvas.addEventListener('pointerdown', jumpCameraFromRadar);
+
+    // === 12. GAMEPLAY SIMULATION LOOP (HARVESTERS, COMBAT, HACKING, RECYCLER, AI WAVES) ===
+    function findNearestEnemy(source, maxScanDist = 34) {
+      let best = null;
+      let bestDist = maxScanDist;
+
+      for (const u of state.units) {
+        if (u.hp <= 0 || u.faction === source.faction) continue;
+        // Hack-Rover only hacks ground combat vehicles
+        if (source.type === 'hackrover' && u.flying) continue;
+        const d = Math.hypot(u.x - source.x, u.z - source.z);
+        if (d < bestDist) {
+          bestDist = d;
+          best = u;
+        }
+      }
+
+      if (!best && source.type !== 'hackrover') {
+        for (const b of state.buildings) {
+          if (b.hp <= 0 || b.faction === source.faction) continue;
+          const d = Math.hypot(b.x - source.x, b.z - source.z);
+          if (d < bestDist) {
+            bestDist = d;
+            best = b;
+          }
+        }
+      }
+
+      return best;
+    }
+
+    function applyDamage(target, amount) {
+      if (!target || target.hp <= 0) return;
+      target.hp -= amount;
+
+      // Update Health Bar scale
+      if (target.hpBar && target.hpBar.userData.fg) {
+        const ratio = Math.max(0, target.hp / target.maxHp);
+        target.hpBar.userData.fg.scale.x = ratio;
+        target.hpBar.userData.fg.material.color.setHex(
+          ratio > 0.5 ? 0x00ff9d : ratio > 0.25 ? 0xffcc00 : 0xff2a4b
+        );
+      }
+
+      if (target.hp <= 0) {
+        destroyEntity(target);
+      }
+    }
+
+    function destroyEntity(ent) {
+      ent.hp = 0;
+      scene.remove(ent.mesh);
+      spawnParticles(ent.x, (ent.y || 0) + 2, ent.z, FACTIONS[ent.faction].primary, ent.isBuilding ? 28 : 16);
+      sfx.playExplosion(ent.isBuilding || ent.type === 'mothership');
+
+      if (ent.isBuilding) {
+        state.buildings = state.buildings.filter((b) => b.id !== ent.id);
+        if (state.selectedBuilding && state.selectedBuilding.id === ent.id) {
+          state.selectedBuilding = null;
+        }
+        recalcPower();
+        refreshBuildButtonsState();
+        checkVictoryConditions();
+      } else {
+        state.units = state.units.filter((u) => u.id !== ent.id);
+        state.selectedUnits = state.selectedUnits.filter((u) => u.id !== ent.id);
+      }
+      updateInspectorUI();
+    }
+
+    function checkVictoryConditions() {
+      const auCount = state.buildings.filter((b) => b.faction === 'AU').length;
+      const eagleCount = state.buildings.filter((b) => b.faction === 'EAGLE').length;
+      const ironCount = state.buildings.filter((b) => b.faction === 'IRON').length;
+
+      document.getElementById('stat-au').textContent = auCount > 0 ? `ONLINE (${auCount})` : 'OFFLINE';
+      document.getElementById('stat-eagle').textContent = eagleCount > 0 ? `ACTIVE (${eagleCount})` : 'DEFEATED';
+      document.getElementById('stat-iron').textContent = ironCount > 0 ? `ACTIVE (${ironCount})` : 'DEFEATED';
+
+      if (eagleCount === 0 && ironCount === 0) {
+        showEvaAlert('🏆 VICTORY! กองทัพ A.U. Cyber Syndicate ของ Commander Achita & General Udom ยึดครองสมรภูมิปี 2030 ได้สำเร็จ!', 'hack');
+      } else if (auCount === 0) {
+        showEvaAlert('💥 ฐานบัญชาการ A.U. ถูกทำลาย! กดปุ่มรีเซ็ตหรือสร้างฐานใหม่เพื่อแก้มือ', 'warn');
+      }
+    }
+
+    function spawnAiWave() {
+      const eagleFactories = state.buildings.filter((b) => b.faction === 'EAGLE' && b.hp > 0);
+      const ironFactories = state.buildings.filter((b) => b.faction === 'IRON' && b.hp > 0);
+      const playerTargets = state.buildings.filter((b) => b.faction === 'AU' && b.hp > 0);
+      if (playerTargets.length === 0) return;
+
+      const mainTarget = playerTargets[Math.floor(Math.random() * playerTargets.length)];
+      let spawnedAny = false;
+
+      // AI 1: United Eagle Hegemony (Prism Laser Tanks + Kamikaze Drones)
+      if (eagleFactories.length > 0) {
+        const base = eagleFactories[0];
+        const count = Math.min(4, 1 + Math.floor(state.waveCount / 2));
+        for (let i = 0; i < count; i++) {
+          const utype = i % 2 === 0 ? 'prism' : 'kamikaze';
+          const u = spawnUnit(utype, 'EAGLE', base.x - 6 - i * 3, base.z + 6 + i * 2);
+          u.targetPos = { x: mainTarget.x, z: mainTarget.z };
+          spawnedAny = true;
+        }
+      }
+
+      // AI 2: Eurasian Iron Bloc (Heavy Armor + Sky Mothership Kirov)
+      if (ironFactories.length > 0) {
+        const base = ironFactories[0];
+        const u1 = spawnUnit('prism', 'IRON', base.x + 5, base.z + 7);
+        u1.targetPos = { x: mainTarget.x, z: mainTarget.z };
+        if (state.waveCount % 2 === 1) {
+          const kirov = spawnUnit('mothership', 'IRON', base.x, base.z + 8);
+          kirov.targetPos = { x: mainTarget.x, z: mainTarget.z };
+        }
+        spawnedAny = true;
+      }
+
+      if (spawnedAny) {
+        state.waveCount++;
+        sfx.playSiren();
+        showEvaAlert(
+          `🚨 ไซเรนเตือนภัย! ทัพ United Eagle & Eurasian Iron ระลอกที่ ${state.waveCount - 1} กำลังเคลื่อนพลบุกฐาน A.U.! (ใช้ Hack-Rover ดักยึดรถถังศัตรูได้เลย!)`,
+          'warn'
+        );
+      }
+    }
+
+    function updateSimulation(dt) {
+      // 1. Keyboard Camera Pan
+      const panSpeed = 48 * dt;
+      if (keysPressed['w'] || keysPressed['arrowup']) {
+        camTarget.x += panSpeed * 0.7;
+        camTarget.z -= panSpeed * 0.7;
+        updateCameraTransform();
+      }
+      if (keysPressed['s'] || keysPressed['arrowdown']) {
+        camTarget.x -= panSpeed * 0.7;
+        camTarget.z += panSpeed * 0.7;
+        updateCameraTransform();
+      }
+      if (keysPressed['a'] || keysPressed['arrowleft']) {
+        camTarget.x -= panSpeed * 0.7;
+        camTarget.z -= panSpeed * 0.7;
+        updateCameraTransform();
+      }
+      if (keysPressed['d'] || keysPressed['arrowright']) {
+        camTarget.x += panSpeed * 0.7;
+        camTarget.z += panSpeed * 0.7;
+        updateCameraTransform();
+      }
+
+      // 2. AI Wave Countdown
+      state.waveTimer -= dt;
+      if (state.waveTimer <= 0) {
+        state.waveTimer = 42;
+        spawnAiWave();
+      }
+      document.getElementById('wave-timer').textContent = `WAVE IN ${Math.ceil(state.waveTimer)}s`;
+
+      // 3. Ore Regeneration & Crystal Animation
+      for (const ore of state.oreNodes) {
+        ore.mesh.rotation.y += dt * 0.6;
+        if (ore.amount < ore.maxAmount) {
+          ore.amount = Math.min(ore.maxAmount, ore.amount + dt * 6);
+        }
+        const s = 0.35 + 0.65 * (ore.amount / ore.maxAmount);
+        ore.mesh.scale.set(s, s, s);
+      }
+
+      // 4. Buildings Logic (Rotating parts + Signal Override Tower defense)
+      for (const b of state.buildings) {
+        if (b.hp <= 0) continue;
+        if (b.model.userData.rotPart) {
+          b.model.userData.rotPart.rotation.y += dt * (b.faction === 'AU' && state.lowPower ? 0.4 : 1.8);
+        }
+
+        if (b.type === 'tower') {
+          const effCooldown = b.faction === 'AU' && state.lowPower ? b.cooldown * 2.8 : b.cooldown;
+          b.fireTimer -= dt;
+          if (b.fireTimer <= 0) {
+            const target = findNearestEnemy(b, b.range);
+            if (target) {
+              b.fireTimer = effCooldown;
+              const startVec = new THREE.Vector3(b.x, 6.8, b.z);
+              const endVec = new THREE.Vector3(target.x, (target.y || 0) + 1.5, target.z);
+              spawnBeam(startVec, endVec, FACTIONS[b.faction].primary, 0.22);
+              sfx.playLaser(false);
+              applyDamage(target, b.damage);
+            }
+          }
+        }
+      }
+
+      // 5. Units Logic (Harvesters, Recycler Entry, Combat, Hacking, Movement)
+      for (let i = state.units.length - 1; i >= 0; i--) {
+        const u = state.units[i];
+        if (!u || u.hp <= 0) continue;
+
+        if (u.model.userData.rotPart) {
+          u.model.userData.rotPart.rotation.y += dt * 3.0;
+        }
+        if (u.crownMesh.visible) {
+          u.crownMesh.rotation.y += dt * 2.5;
+        }
+
+        // 5A. Check if entering Cyber Recycler
+        if (u.recycleTarget) {
+          if (u.recycleTarget.hp <= 0) {
+            u.recycleTarget = null;
+          } else {
+            const distToRec = Math.hypot(u.recycleTarget.x - u.x, u.recycleTarget.z - u.z);
+            if (distToRec <= u.recycleTarget.radius + 1.8) {
+              const cash = u.recycleValue;
+              addCredits(cash);
+              sfx.playCashRecycle();
+              spawnParticles(u.x, 2.5, u.z, 0x00ff9d, 22);
+              showEvaAlert(`♻️ Cyber Recycler ย่อยสลาย ${u.name} เรียบร้อย! ได้รับเงินสด +$${cash} Credits!`, 'hack');
+              scene.remove(u.mesh);
+              state.units.splice(i, 1);
+              state.selectedUnits = state.selectedUnits.filter((s) => s.id !== u.id);
+              updateInspectorUI();
+              continue;
+            } else {
+              u.targetPos = { x: u.recycleTarget.x, z: u.recycleTarget.z };
+            }
+          }
+        }
+
+        // 5B. Autonomous Harvester Economy Cycle
+        if (u.type === 'harvester' && u.harvestState !== 'manual') {
+          if (u.harvestState === 'seeking_ore') {
+            let bestOre = null;
+            let bestDist = Infinity;
+            for (const ore of state.oreNodes) {
+              if (ore.amount > 50) {
+                const d = Math.hypot(ore.x - u.x, ore.z - u.z);
+                if (d < bestDist) {
+                  bestDist = d;
+                  bestOre = ore;
+                }
+              }
+            }
+            if (bestOre) {
+              if (bestDist > 3.2) {
+                u.targetPos = { x: bestOre.x, z: bestOre.z };
+              } else {
+                u.targetPos = null;
+                const mined = Math.min(bestOre.amount, dt * 110);
+                bestOre.amount -= mined;
+                u.cargo += mined;
+                if (Math.random() < 0.2) {
+                  spawnParticles(bestOre.x, 1.2, bestOre.z, 0x00ff9d, 1);
+                }
+                if (u.cargo >= u.maxCargo) {
+                  u.harvestState = 'returning';
+                }
+              }
+            }
+          } else if (u.harvestState === 'returning') {
+            const refineries = state.buildings.filter((b) => b.faction === u.faction && b.type === 'refinery' && b.hp > 0);
+            if (refineries.length > 0) {
+              let nearestRef = refineries[0];
+              let minD = Math.hypot(nearestRef.x - u.x, nearestRef.z - u.z);
+              for (const r of refineries) {
+                const d = Math.hypot(r.x - u.x, r.z - u.z);
+                if (d < minD) {
+                  minD = d;
+                  nearestRef = r;
+                }
+              }
+              if (minD > nearestRef.radius + 2.2) {
+                u.targetPos = { x: nearestRef.x, z: nearestRef.z };
+              } else {
+                u.targetPos = null;
+                if (u.faction === 'AU') {
+                  const earned = Math.round(u.cargo);
+                  addCredits(earned);
+                  spawnParticles(nearestRef.x, 3, nearestRef.z, 0x00ff9d, 8);
+                }
+                u.cargo = 0;
+                u.harvestState = 'seeking_ore';
+              }
+            }
+          }
+        }
+
+        // 5C. Combat & Hack-Rover Targeting
+        if (u.type !== 'harvester' && !u.recycleTarget) {
+          if (u.targetEntity && (u.targetEntity.hp <= 0 || u.targetEntity.faction === u.faction)) {
+            u.targetEntity = null;
+          }
+
+          if (!u.targetEntity) {
+            const autoTarget = findNearestEnemy(u, u.range + 8);
+            if (autoTarget) {
+              u.targetEntity = autoTarget;
+            }
+          }
+
+          if (u.targetEntity) {
+            const dist = Math.hypot(u.targetEntity.x - u.x, u.targetEntity.z - u.z);
+            if (dist <= u.range) {
+              // In firing range
+              u.fireTimer -= dt;
+              const angleToTarget = Math.atan2(u.targetEntity.x - u.x, u.targetEntity.z - u.z);
+              u.model.rotation.y = angleToTarget;
+
+              if (u.type === 'kamikaze') {
+                // Kamikaze Drone detonates on impact!
+                spawnParticles(u.x, u.y + 1, u.z, 0x00f0ff, 22);
+                sfx.playExplosion(false);
+                // Splash damage
+                for (const enemyU of state.units) {
+                  if (enemyU.faction !== u.faction && Math.hypot(enemyU.x - u.x, enemyU.z - u.z) < 6.5) {
+                    applyDamage(enemyU, u.damage);
+                  }
+                }
+                for (const enemyB of state.buildings) {
+                  if (enemyB.faction !== u.faction && Math.hypot(enemyB.x - u.x, enemyB.z - u.z) < 7.5) {
+                    applyDamage(enemyB, u.damage);
+                  }
+                }
+                destroyEntity(u);
+                continue;
+              } else if (u.type === 'hackrover') {
+                // A.U. Hack-Rover Neural Override Beam!
+                if (u.targetEntity.isUnit && !u.targetEntity.flying) {
+                  if (u.fireTimer <= 0) {
+                    u.fireTimer = u.cooldown;
+                    const sVec = new THREE.Vector3(u.x, 2.2, u.z);
+                    const eVec = new THREE.Vector3(u.targetEntity.x, 1.8, u.targetEntity.z);
+                    spawnBeam(sVec, eVec, 0xb829ff, 0.65);
+                    convertUnitFaction(u.targetEntity, u.faction);
+                    u.targetEntity = null;
+                  }
+                } else {
+                  u.targetEntity = null;
+                }
+              } else if (u.type === 'prism') {
+                // Prism Laser Tank (Chain Refraction Laser!)
+                if (u.fireTimer <= 0) {
+                  u.fireTimer = u.cooldown;
+                  const sVec = new THREE.Vector3(u.x, 2.1, u.z);
+                  const eVec = new THREE.Vector3(u.targetEntity.x, (u.targetEntity.y || 0) + 1.5, u.targetEntity.z);
+                  const beamCol = u.faction === 'AU' ? 0x00f0ff : FACTIONS[u.faction].primary;
+                  spawnBeam(sVec, eVec, beamCol, 0.26);
+                  sfx.playLaser(true);
+                  applyDamage(u.targetEntity, u.damage);
+
+                  // Refract to up to 2 nearby enemies
+                  let bounces = 0;
+                  for (const other of state.units) {
+                    if (bounces >= 2) break;
+                    if (other.hp > 0 && other.faction !== u.faction && other.id !== u.targetEntity.id) {
+                      if (Math.hypot(other.x - u.targetEntity.x, other.z - u.targetEntity.z) < 11) {
+                        const bVec = new THREE.Vector3(other.x, (other.y || 0) + 1.4, other.z);
+                        spawnBeam(eVec, bVec, 0xb829ff, 0.24);
+                        applyDamage(other, u.damage * 0.6);
+                        bounces++;
+                      }
+                    }
+                  }
+                }
+              } else if (u.type === 'mothership') {
+                // Sky Mothership Kirov Carpet Bombing
+                if (u.fireTimer <= 0) {
+                  u.fireTimer = u.cooldown;
+                  const sVec = new THREE.Vector3(u.x, u.y - 1.5, u.z);
+                  const eVec = new THREE.Vector3(u.targetEntity.x, 0.5, u.targetEntity.z);
+                  spawnBeam(sVec, eVec, 0xff9900, 0.35);
+                  spawnParticles(u.targetEntity.x, 1.5, u.targetEntity.z, 0xff5500, 18);
+                  sfx.playExplosion(true);
+                  applyDamage(u.targetEntity, u.damage);
+                }
+              }
+            } else {
+              // Move closer to targetEntity
+              u.targetPos = { x: u.targetEntity.x, z: u.targetEntity.z };
+            }
+          }
+        }
+
+        // 5D. Movement & Soft Separation
+        if (u.targetPos) {
+          const dx = u.targetPos.x - u.x;
+          const dz = u.targetPos.z - u.z;
+          const dist = Math.hypot(dx, dz);
+          const stopDist = u.targetEntity ? Math.max(2.0, u.range * 0.85) : 1.1;
+
+          if (dist > stopDist) {
+            const vx = (dx / dist) * u.speed * dt;
+            const vz = (dz / dist) * u.speed * dt;
+            u.x += vx;
+            u.z += vz;
+            u.model.rotation.y = Math.atan2(dx, dz);
+          } else if (!u.targetEntity && !u.recycleTarget) {
+            u.targetPos = null;
+          }
+        }
+
+        // Soft Unit Separation
+        for (const other of state.units) {
+          if (other.id === u.id || other.flying !== u.flying) continue;
+          const sdx = u.x - other.x;
+          const sdz = u.z - other.z;
+          const sdist = Math.hypot(sdx, sdz);
+          if (sdist > 0.01 && sdist < 2.8) {
+            const push = (2.8 - sdist) * 2.5 * dt;
+            u.x += (sdx / sdist) * push;
+            u.z += (sdz / sdist) * push;
+          }
+        }
+
+        u.x = Math.max(-MAP_SIZE * 0.47, Math.min(MAP_SIZE * 0.47, u.x));
+        u.z = Math.max(-MAP_SIZE * 0.47, Math.min(MAP_SIZE * 0.47, u.z));
+        u.mesh.position.set(u.x, u.y, u.z);
+      }
+
+      // 6. Update Beams & Particles
+      for (let i = state.beams.length - 1; i >= 0; i--) {
+        const b = state.beams[i];
+        b.timer -= dt;
+        b.mat.opacity = Math.max(0, b.timer / b.maxTimer);
+        if (b.timer <= 0) {
+          scene.remove(b.line);
+          b.line.geometry.dispose();
+          b.mat.dispose();
+          state.beams.splice(i, 1);
+        }
+      }
+
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.timer -= dt;
+        p.mesh.position.addScaledVector(p.vel, dt);
+        p.vel.y -= 24 * dt;
+        p.mesh.material.opacity = Math.max(0, p.timer / p.maxTimer);
+        if (p.timer <= 0) {
+          scene.remove(p.mesh);
+          p.mesh.geometry.dispose();
+          p.mesh.material.dispose();
+          state.particles.splice(i, 1);
+        }
+      }
+    }
+
+    // === 13. RADAR MINIMAP RENDERING ===
+    function renderRadar() {
+      const w = radarCanvas.width;
+      const h = radarCanvas.height;
+      radarCtx.fillStyle = '#040814';
+      radarCtx.fillRect(0, 0, w, h);
+
+      // Grid lines
+      radarCtx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
+      radarCtx.lineWidth = 1;
+      radarCtx.beginPath();
+      radarCtx.moveTo(w / 2, 0);
+      radarCtx.lineTo(w / 2, h);
+      radarCtx.moveTo(0, h / 2);
+      radarCtx.lineTo(w, h / 2);
+      radarCtx.stroke();
+
+      const toRx = (wx) => ((wx / MAP_SIZE) + 0.5) * w;
+      const toRy = (wz) => ((wz / MAP_SIZE) + 0.5) * h;
+
+      // Draw Ore Nodes
+      radarCtx.fillStyle = '#00ff9d';
+      for (const ore of state.oreNodes) {
+        if (ore.amount > 100) {
+          radarCtx.fillRect(toRx(ore.x) - 1.5, toRy(ore.z) - 1.5, 3, 3);
+        }
+      }
+
+      // Draw Buildings
+      for (const b of state.buildings) {
+        radarCtx.fillStyle = FACTIONS[b.faction].css;
+        radarCtx.fillRect(toRx(b.x) - 3.5, toRy(b.z) - 3.5, 7, 7);
+      }
+
+      // Draw Units
+      for (const u of state.units) {
+        radarCtx.fillStyle = FACTIONS[u.faction].css;
+        radarCtx.beginPath();
+        radarCtx.arc(toRx(u.x), toRy(u.z), 2.3, 0, Math.PI * 2);
+        radarCtx.fill();
+      }
+
+      // Draw Camera Viewport Indicator
+      radarCtx.strokeStyle = '#ffffff';
+      radarCtx.lineWidth = 1.2;
+      radarCtx.strokeRect(toRx(camTarget.x) - 16, toRy(camTarget.z) - 10, 32, 20);
+    }
+
+    // === 14. INITIAL BATTLEFIELD SETUP ===
+    function initBattlefield() {
+      // 1. Spawn Energy Crystal Ore Fields
+      spawnOreCluster(-22, 32, 9);   // Near A.U. Player Base
+      spawnOreCluster(-58, 12, 7);   // West Expansion Ore
+      spawnOreCluster(6, 4, 10);     // Center Contested High-Yield Ore Field
+      spawnOreCluster(26, -28, 7);   // Near United Eagle Base
+      spawnOreCluster(-20, -34, 7);  // Near Eurasian Iron Base
+
+      // 2. Player Faction: A.U. Cyber Syndicate (South-West)
+      spawnBuilding('hq', 'AU', -52, 52);
+      spawnBuilding('power', 'AU', -64, 48);
+      spawnBuilding('refinery', 'AU', -38, 46);
+      spawnBuilding('factory', 'AU', -46, 35);
+      spawnBuilding('recycler', 'AU', -60, 35);
+      spawnBuilding('tower', 'AU', -32, 32);
+
+      // Initial A.U. Strike Squad (Commander Achita & General Udom vanguard)
+      spawnUnit('hackrover', 'AU', -36, 26);
+      spawnUnit('prism', 'AU', -41, 27);
+      spawnUnit('kamikaze', 'AU', -32, 28);
+      spawnUnit('kamikaze', 'AU', -30, 30);
+
+      // 3. AI Faction 1: United Eagle Hegemony (North-East — Red/Gold)
+      spawnBuilding('hq', 'EAGLE', 54, -54);
+      spawnBuilding('power', 'EAGLE', 66, -48);
+      spawnBuilding('refinery', 'EAGLE', 40, -48);
+      spawnBuilding('factory', 'EAGLE', 46, -36);
+      spawnBuilding('tower', 'EAGLE', 34, -32);
+      spawnUnit('prism', 'EAGLE', 38, -28);
+      spawnUnit('prism', 'EAGLE', 44, -28);
+
+      // 4. AI Faction 2: Eurasian Iron Bloc (North-West — Orange/Steel)
+      spawnBuilding('hq', 'IRON', -48, -54);
+      spawnBuilding('power', 'IRON', -60, -48);
+      spawnBuilding('factory', 'IRON', -38, -44);
+      spawnBuilding('tower', 'IRON', -32, -36);
+      spawnUnit('mothership', 'IRON', -36, -34);
+      spawnUnit('prism', 'IRON', -42, -32);
+
+      recalcPower();
+      renderSidebarMenus();
+      checkVictoryConditions();
+    }
+
+    // === 15. TOP BAR BUTTONS & MODAL ===
+    const btnAudio = document.getElementById('btn-audio');
+    btnAudio.addEventListener('click', () => {
+      const on = sfx.toggle();
+      btnAudio.textContent = on ? '🔊 เสียง: เปิด' : '🔇 เสียง: ปิด';
+      btnAudio.classList.toggle('active', on);
+    });
+
+    document.getElementById('btn-force-wave').addEventListener('click', () => {
+      sfx.playUiClick();
+      state.waveTimer = 40;
+      spawnAiWave();
+    });
+
+    const modalOverlay = document.getElementById('modal-overlay');
+    document.getElementById('btn-briefing').addEventListener('click', () => {
+      sfx.playUiClick();
+      modalOverlay.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-start-mission').addEventListener('click', () => {
+      sfx.init();
+      sfx.playUiClick();
+      modalOverlay.classList.add('hidden');
+      showEvaAlert('⚡ Commander Achita & General Udom: เริ่มปฏิบัติการแฮ็กยึดสมรภูมิได้!');
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // === 16. MAIN GAME LOOP ===
+    initBattlefield();
+
+    let lastTime = performance.now();
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min(0.08, (now - lastTime) / 1000);
+      lastTime = now;
+
+      updateSimulation(dt);
+      renderRadar();
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
