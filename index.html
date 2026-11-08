@@ -4,26 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>CYBER ALERT 3D: Rise of A.U. | A.U. Studio (Achita & Udom Games)</title>
-  <meta name="description" content="CYBER ALERT 3D: Rise of A.U. — เกม 3D RTS สงครามไซเบอร์และฝูงโดรนปี 2030 โดย A.U. Studio (Achita & Udom Games) เล่นได้ทันทีบนเบราว์เซอร์" />
+  <meta name="description" content="CYBER ALERT 3D: Rise of A.U. — เกม 3D RTS สงครามทหารไซเบอร์และพลังจิต Yuri ยุค 2030 โดย A.U. Studio (Achita & Udom Games)" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@600;800;900&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Three.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     :root {
-      --bg-dark: #060812;
-      --panel-bg: rgba(10, 14, 28, 0.92);
-      --panel-border: #1e2d52;
-      --au-cyan: #00f0ff;
-      --au-purple: #b829ff;
-      --eagle-red: #ff2a4b;
-      --eagle-gold: #ffcc00;
-      --iron-orange: #ff7700;
-      --iron-steel: #94a3b8;
-      --ore-green: #00ff9d;
-      --text-main: #e2e8f0;
-      --text-muted: #8b9bb4;
+      --steel-dark: #14171f;
+      --steel-mid: #232834;
+      --steel-light: #3d4659;
+      --brass-gold: #d4af37;
+      --yuri-purple: #9d2bf5;
+      --yuri-magenta: #df00ff;
+      --au-cyan: #00d8ff;
+      --eagle-red: #d92626;
+      --iron-orange: #e66000;
+      --ore-gold: #ffb700;
+      --ore-green: #00e676;
+      --hazard-yellow: #f5b700;
+      --text-main: #e8ecf2;
+      --text-muted: #9aa5b8;
     }
 
     * {
@@ -39,8 +41,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: var(--bg-dark);
-      font-family: 'Kanit', 'Rajdhani', sans-serif;
+      background-color: #0b0d12;
+      font-family: 'Chakra Petch', 'Kanit', sans-serif;
       color: var(--text-main);
       touch-action: none;
     }
@@ -53,30 +55,30 @@
       z-index: 1;
     }
 
-    /* Box Selection Overlay */
+    /* Tactical Box Selection */
     #selection-box {
       position: fixed;
-      border: 2px solid var(--au-cyan);
-      background: rgba(0, 240, 255, 0.14);
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      border: 2px solid #00ff66;
+      background: rgba(0, 255, 102, 0.14);
       pointer-events: none;
       display: none;
       z-index: 20;
     }
 
-    /* Top HUD Bar */
+    /* Military Top Command Bar (RA2 / Yuri Style) */
     #top-hud {
       position: fixed;
       top: 0;
       left: 0;
-      right: 290px;
-      height: 56px;
-      background: linear-gradient(180deg, rgba(8, 12, 26, 0.96) 0%, rgba(10, 16, 34, 0.85) 100%);
-      border-bottom: 2px solid #1e325c;
+      right: 304px;
+      height: 54px;
+      background: linear-gradient(180deg, #272c38 0%, #151821 100%);
+      border-bottom: 3px solid #495266;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(0,0,0,0.75);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
+      padding: 0 12px;
       z-index: 30;
       gap: 10px;
     }
@@ -89,19 +91,21 @@
     }
 
     .brand-emblem {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      background: linear-gradient(135deg, #00d2ff 0%, #9d00ff 100%);
+      width: 38px;
+      height: 38px;
+      background: radial-gradient(circle, #4a0e78 0%, #1d0533 100%);
+      border: 2px solid var(--brass-gold);
+      box-shadow: inset 0 0 8px #df00ff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      font-size: 13px;
-      color: #fff;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
       flex-shrink: 0;
+      position: relative;
+    }
+
+    .brand-emblem svg {
+      width: 26px;
+      height: 26px;
     }
 
     .brand-titles {
@@ -112,10 +116,11 @@
 
     .brand-titles h1 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.07em;
       color: #fff;
+      text-shadow: 0 1px 3px #000;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -123,74 +128,85 @@
 
     .brand-titles span {
       font-size: 11px;
-      color: var(--au-cyan);
+      color: #d69eff;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
+    /* Digital Military Resource Counters */
     .resources-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .res-pill {
-      background: rgba(4, 9, 20, 0.9);
-      border: 1px solid #263b6a;
-      border-radius: 6px;
-      padding: 4px 12px;
+      background: #080a0f;
+      border: 2px solid #444d61;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.9);
+      padding: 3px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      min-width: 125px;
+      gap: 9px;
+      min-width: 135px;
+      position: relative;
+    }
+
+    .res-pill::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 4px;
+      height: 4px;
+      background: #69758c;
     }
 
     .res-pill.low-power {
-      border-color: var(--eagle-red);
-      background: rgba(60, 10, 20, 0.85);
-      animation: pulse-danger 1s infinite alternate;
+      border-color: #ff2222;
+      background: #2b0709;
+      animation: alarm-flash 0.7s infinite alternate;
     }
 
-    @keyframes pulse-danger {
-      from { opacity: 1; }
-      to { opacity: 0.65; }
-    }
-
-    .res-icon {
-      font-size: 16px;
+    @keyframes alarm-flash {
+      from { border-color: #ff2222; }
+      to { border-color: #ffaa00; }
     }
 
     .res-info {
       display: flex;
       flex-direction: column;
-      line-height: 1.1;
+      line-height: 1.05;
     }
 
     .res-label {
-      font-size: 10px;
+      font-size: 9.5px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      color: #8f9bb3;
     }
 
     .res-val {
       font-family: 'Orbitron', sans-serif;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       color: #fff;
     }
 
     .res-val.credits {
-      color: var(--ore-green);
+      color: #ffcc00;
+      text-shadow: 0 0 6px rgba(255, 204, 0, 0.35);
     }
 
     .res-val.power-ok {
-      color: var(--au-cyan);
+      color: #00ff88;
     }
 
     .res-val.power-low {
-      color: var(--eagle-red);
+      color: #ff3333;
     }
 
     .hud-actions {
@@ -200,60 +216,57 @@
     }
 
     .hud-btn {
-      background: rgba(18, 28, 56, 0.9);
-      border: 1px solid #2e477d;
+      background: linear-gradient(180deg, #32394a 0%, #1c212b 100%);
+      border: 2px solid #535e75;
       color: #e2e8f0;
-      padding: 6px 10px;
-      border-radius: 5px;
-      font-family: 'Kanit', sans-serif;
+      padding: 5px 10px;
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       gap: 5px;
       white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
     }
 
     .hud-btn:hover {
-      background: rgba(0, 240, 255, 0.18);
-      border-color: var(--au-cyan);
+      background: linear-gradient(180deg, #4a1975 0%, #270b42 100%);
+      border-color: var(--brass-gold);
       color: #fff;
     }
 
     .hud-btn.active {
-      background: rgba(184, 41, 255, 0.28);
-      border-color: var(--au-purple);
+      background: linear-gradient(180deg, #56168c 0%, #2e094f 100%);
+      border-color: #c77dff;
       color: #fff;
     }
 
-    /* Faction Status Banner */
+    /* Faction Status Ticker (Top Left) */
     #faction-ticker {
       position: fixed;
-      top: 64px;
-      left: 12px;
+      top: 62px;
+      left: 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
       z-index: 25;
       pointer-events: none;
-      max-width: 340px;
+      width: 310px;
     }
 
     .faction-badge {
-      background: rgba(8, 12, 26, 0.84);
-      border-left: 4px solid var(--au-cyan);
-      padding: 5px 10px;
-      border-radius: 0 6px 6px 0;
+      background: rgba(15, 18, 26, 0.92);
+      border: 1px solid #3c4457;
+      border-left: 5px solid var(--yuri-purple);
+      padding: 4px 10px;
       font-size: 11.5px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      border-right: 1px solid rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     }
 
     .faction-badge.eagle {
@@ -265,35 +278,36 @@
     }
 
     .faction-name {
-      font-weight: 600;
-      color: #fff;
+      font-weight: 700;
+      color: #f1f5f9;
     }
 
     .faction-status {
       font-family: 'Orbitron', sans-serif;
-      font-size: 10.5px;
-      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      color: #00ff88;
     }
 
-    /* Alert Toast Banner */
+    /* EVA Military Transmission Banner */
     #eva-alert {
       position: fixed;
-      top: 68px;
+      top: 64px;
       left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: rgba(15, 10, 34, 0.94);
-      border: 1px solid var(--au-cyan);
-      padding: 8px 20px;
-      border-radius: 6px;
-      font-size: 13.5px;
-      font-weight: 600;
+      transform: translateX(-50%) translateY(-16px);
+      background: linear-gradient(180deg, #241038 0%, #12071f 100%);
+      border: 2px solid var(--brass-gold);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.85);
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
       color: #fff;
       z-index: 40;
       pointer-events: none;
       opacity: 0;
-      transition: all 0.25s ease;
+      transition: all 0.22s ease;
       text-align: center;
-      max-width: 85vw;
+      max-width: 82vw;
     }
 
     #eva-alert.show {
@@ -302,35 +316,36 @@
     }
 
     #eva-alert.warn {
-      border-color: var(--eagle-red);
-      background: rgba(50, 8, 18, 0.95);
-      color: #ffd1d9;
+      background: linear-gradient(180deg, #4a0d12 0%, #240508 100%);
+      border-color: #ff3333;
+      color: #ffd6d6;
     }
 
     #eva-alert.hack {
-      border-color: var(--au-purple);
-      background: rgba(38, 10, 56, 0.95);
-      color: #f0d1ff;
+      background: linear-gradient(180deg, #3c096c 0%, #190330 100%);
+      border-color: #e0aaff;
+      color: #f3d5ff;
     }
 
-    /* Red Alert 2 Style Right Command Sidebar */
+    /* Red Alert 2 / Yuri's Revenge Authentic Armored Sidebar */
     #command-sidebar {
       position: fixed;
       top: 0;
       right: 0;
       bottom: 0;
-      width: 290px;
-      background: linear-gradient(180deg, #0b1021 0%, #080b18 100%);
-      border-left: 2px solid #223560;
+      width: 304px;
+      background: linear-gradient(90deg, #1b1f29 0%, #12151c 15%, #161a24 100%);
+      border-left: 4px solid #495266;
+      box-shadow: -6px 0 20px rgba(0,0,0,0.85);
       display: flex;
       flex-direction: column;
       z-index: 35;
     }
 
     .sidebar-header {
-      padding: 10px 12px;
-      background: rgba(16, 24, 48, 0.95);
-      border-bottom: 1px solid #223560;
+      padding: 8px 10px;
+      background: linear-gradient(180deg, #381854 0%, #1d0b2e 100%);
+      border-bottom: 2px solid var(--brass-gold);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -338,38 +353,43 @@
 
     .sidebar-header-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--au-cyan);
+      font-size: 11.5px;
+      font-weight: 900;
+      color: #f3d5ff;
       letter-spacing: 0.08em;
     }
 
     .wave-timer-tag {
       font-family: 'Orbitron', sans-serif;
-      font-size: 11px;
-      color: var(--eagle-gold);
-      background: rgba(255, 204, 0, 0.12);
-      border: 1px solid rgba(255, 204, 0, 0.35);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #111;
+      background: var(--hazard-yellow);
       padding: 2px 7px;
-      border-radius: 4px;
+      border: 1px solid #fff;
     }
 
-    /* Tactical Radar Minimap */
+    /* Military Radar Minimap Frame */
     .radar-wrapper {
-      padding: 8px 12px;
-      border-bottom: 1px solid #1e2f56;
-      background: #050811;
+      padding: 8px 10px;
+      border-bottom: 3px solid #3c4457;
+      background: #0c0e14;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
+    .radar-bezel {
+      position: relative;
+      border: 3px solid #4a5368;
+      background: #050907;
+      box-shadow: inset 0 0 14px rgba(0,0,0,0.95);
+    }
+
     #radar-canvas {
-      width: 262px;
-      height: 126px;
-      background: #030710;
-      border: 1px solid #254073;
-      border-radius: 4px;
+      width: 274px;
+      height: 132px;
+      display: block;
       cursor: crosshair;
     }
 
@@ -378,149 +398,177 @@
       display: flex;
       justify-content: space-between;
       font-size: 10.5px;
-      color: var(--text-muted);
+      font-weight: 600;
+      color: #9aa5b8;
       margin-top: 4px;
     }
 
-    /* Sidebar Tabs */
+    /* Power Meter Bar beside Cameos (RA2 style indicator strip) */
+    .power-strip-bar {
+      width: 100%;
+      height: 8px;
+      background: #090b10;
+      border-bottom: 2px solid #384052;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #power-fill-strip {
+      height: 100%;
+      width: 75%;
+      background: linear-gradient(90deg, #00e676 0%, #ffd600 75%, #ff1744 100%);
+      transition: width 0.3s ease;
+    }
+
+    /* Sidebar Category Tabs */
     .sidebar-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid #223560;
-      background: #090e1d;
+      border-bottom: 2px solid #495266;
+      background: #141821;
     }
 
     .tab-btn {
-      background: transparent;
+      background: linear-gradient(180deg, #262c3a 0%, #171b24 100%);
       border: none;
-      color: var(--text-muted);
-      padding: 9px 6px;
-      font-family: 'Kanit', sans-serif;
+      border-right: 1px solid #3c4457;
+      color: #9aa5b8;
+      padding: 8px 6px;
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 12.5px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .tab-btn.active {
       color: #fff;
-      background: rgba(0, 240, 255, 0.1);
-      border-bottom-color: var(--au-cyan);
+      background: linear-gradient(180deg, #521982 0%, #2b0b47 100%);
+      box-shadow: inset 0 -3px 0 var(--brass-gold);
     }
 
-    /* Build Grid */
+    /* RA2 2-Column Tactical Cameo Grid */
     .build-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 7px;
+      align-content: start;
+      background: repeating-linear-gradient(
+        -45deg,
+        #12151e,
+        #12151e 8px,
+        #161a24 8px,
+        #161a24 16px
+      );
     }
 
     .build-scroll::-webkit-scrollbar {
       width: 5px;
     }
     .build-scroll::-webkit-scrollbar-thumb {
-      background: #253b6e;
-      border-radius: 3px;
+      background: #495266;
     }
 
     .cameo-card {
-      background: linear-gradient(135deg, rgba(16, 25, 50, 0.92) 0%, rgba(10, 15, 32, 0.92) 100%);
-      border: 1px solid #263c6e;
-      border-radius: 6px;
-      padding: 8px 10px;
+      background: linear-gradient(180deg, #232938 0%, #12161f 100%);
+      border: 2px solid #4c566d;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 3px 6px rgba(0,0,0,0.6);
+      padding: 6px;
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      justify-content: space-between;
       cursor: pointer;
-      transition: all 0.15s ease;
       position: relative;
+      min-height: 98px;
+      transition: transform 0.1s ease, border-color 0.1s ease;
     }
 
     .cameo-card:hover:not(.disabled) {
-      border-color: var(--au-cyan);
-      background: rgba(0, 240, 255, 0.12);
-      transform: translateX(-2px);
+      border-color: var(--brass-gold);
+      background: linear-gradient(180deg, #3b175e 0%, #1c0a30 100%);
+      transform: translateY(-1px);
     }
 
     .cameo-card.active-place {
-      border-color: var(--ore-green);
-      background: rgba(0, 255, 157, 0.16);
+      border-color: #00ff88;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
     }
 
     .cameo-card.disabled {
-      opacity: 0.48;
+      opacity: 0.42;
+      filter: grayscale(0.7);
       cursor: not-allowed;
     }
 
-    .cameo-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 6px;
-      background: rgba(5, 10, 24, 0.9);
-      border: 1px solid #314b85;
+    .cameo-art {
+      width: 100%;
+      height: 46px;
+      background: radial-gradient(circle at 50% 50%, #2a1642 0%, #0d1017 100%);
+      border: 1px solid #384154;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 21px;
-      flex-shrink: 0;
+      margin-bottom: 4px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .cameo-body {
-      flex: 1;
-      min-width: 0;
+    .cameo-art svg {
+      width: 40px;
+      height: 40px;
     }
 
-    .cameo-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
+    .cameo-cost-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(8, 10, 15, 0.9);
+      border: 1px solid #5c6780;
+      padding: 0 4px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ffcc00;
     }
+
+    .cameo-power-badge {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      background: rgba(8, 10, 15, 0.88);
+      padding: 0 4px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .power-plus { color: #00ff88; }
+    .power-minus { color: #ff6e40; }
 
     .cameo-title {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .cameo-cost {
-      font-family: 'Orbitron', sans-serif;
       font-size: 11.5px;
       font-weight: 700;
-      color: var(--ore-green);
-      flex-shrink: 0;
+      color: #fff;
+      line-height: 1.15;
     }
 
     .cameo-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.25;
-      margin-top: 2px;
-    }
-
-    .cameo-power {
       font-size: 10px;
-      font-family: 'Orbitron', sans-serif;
+      color: #9aa5b8;
+      line-height: 1.2;
       margin-top: 2px;
-      display: inline-block;
     }
 
-    .power-plus { color: #00ff9d; }
-    .power-minus { color: #ff8a65; }
-
-    /* Selected Unit / Structure Inspector */
+    /* Selected Unit / Structure Tactical Inspector */
     #inspector-panel {
-      padding: 10px 12px;
-      background: rgba(8, 13, 28, 0.98);
-      border-top: 1px solid #223560;
-      min-height: 110px;
+      padding: 9px 10px;
+      background: linear-gradient(180deg, #1c212c 0%, #10131a 100%);
+      border-top: 3px solid #495266;
+      min-height: 116px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -534,122 +582,119 @@
     }
 
     .inspector-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--au-cyan);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #e0aaff;
+      text-transform: uppercase;
     }
 
     .inspector-count {
       font-family: 'Orbitron', sans-serif;
-      font-size: 11px;
-      color: #fff;
-      background: rgba(0, 240, 255, 0.18);
-      padding: 1px 7px;
-      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #111;
+      background: #00e676;
+      padding: 1px 6px;
     }
 
     .inspector-sub {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      line-height: 1.3;
+      font-size: 11px;
+      color: #b0bac9;
+      line-height: 1.28;
     }
 
     .inspector-btns {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
-      margin-top: 2px;
     }
 
     .insp-btn {
-      background: rgba(24, 38, 74, 0.9);
-      border: 1px solid #355399;
+      background: linear-gradient(180deg, #32394a 0%, #1c212b 100%);
+      border: 2px solid #56617a;
       color: #fff;
-      border-radius: 4px;
-      padding: 5px 8px;
-      font-family: 'Kanit', sans-serif;
+      padding: 5px 6px;
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 11.5px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
     }
 
     .insp-btn:hover {
-      border-color: var(--au-cyan);
-      background: rgba(0, 240, 255, 0.2);
+      border-color: var(--brass-gold);
+      background: #3d215c;
     }
 
     .insp-btn.recycle-btn {
-      border-color: var(--ore-green);
-      background: rgba(0, 255, 157, 0.15);
-      color: var(--ore-green);
+      border-color: var(--hazard-yellow);
+      background: linear-gradient(180deg, #423308 0%, #241b03 100%);
+      color: #ffd54f;
     }
 
     .insp-btn.recycle-btn:hover {
-      background: rgba(0, 255, 157, 0.3);
+      background: #5c470b;
       color: #fff;
     }
 
-    /* Bottom Touch & Mouse Command Dock */
+    /* Bottom Military Command Bar (Mouse & Touch) */
     #bottom-command-bar {
       position: fixed;
-      bottom: 12px;
-      left: 12px;
-      right: 302px;
+      bottom: 10px;
+      left: 10px;
+      right: 314px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       z-index: 30;
       pointer-events: none;
     }
 
     .cmd-group {
       pointer-events: auto;
-      background: rgba(8, 12, 26, 0.92);
-      border: 1px solid #263c6e;
-      border-radius: 8px;
-      padding: 6px;
+      background: linear-gradient(180deg, #252b38 0%, #141720 100%);
+      border: 2px solid #4d576e;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      padding: 5px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-wrap: wrap;
     }
 
     .mode-btn {
-      background: rgba(16, 25, 48, 0.9);
-      border: 1px solid #2d467e;
-      color: var(--text-main);
-      padding: 7px 12px;
-      border-radius: 6px;
-      font-family: 'Kanit', sans-serif;
-      font-size: 12.5px;
-      font-weight: 500;
+      background: #161922;
+      border: 2px solid #3c4457;
+      color: #cbd5e1;
+      padding: 6px 11px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.15s ease;
     }
 
     .mode-btn:hover {
-      border-color: var(--au-cyan);
+      border-color: var(--brass-gold);
       color: #fff;
     }
 
     .mode-btn.active {
-      background: rgba(0, 240, 255, 0.22);
-      border-color: var(--au-cyan);
+      background: linear-gradient(180deg, #4f1680 0%, #280845 100%);
+      border-color: var(--brass-gold);
       color: #fff;
     }
 
     .mode-btn.mode-attack.active {
-      background: rgba(255, 42, 75, 0.25);
-      border-color: var(--eagle-red);
+      background: linear-gradient(180deg, #7a121b 0%, #42070c 100%);
+      border-color: #ff4d4d;
     }
 
     .mode-btn.mode-recycle.active {
-      background: rgba(0, 255, 157, 0.25);
-      border-color: var(--ore-green);
+      background: linear-gradient(180deg, #5e4806 0%, #332602 100%);
+      border-color: var(--hazard-yellow);
     }
 
     .cam-pad {
@@ -661,11 +706,12 @@
     .cam-btn {
       width: 34px;
       height: 34px;
-      background: rgba(16, 25, 48, 0.9);
-      border: 1px solid #2d467e;
+      background: #161922;
+      border: 2px solid #495266;
       color: #fff;
-      border-radius: 6px;
-      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -673,16 +719,50 @@
     }
 
     .cam-btn:hover {
-      border-color: var(--au-cyan);
-      background: rgba(0, 240, 255, 0.2);
+      border-color: var(--brass-gold);
+      background: #381854;
     }
 
-    /* Briefing / Victory Modal */
+    /* Placement Hint Banner */
+    #placement-banner {
+      position: fixed;
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #16291c;
+      border: 2px solid #00e676;
+      color: #fff;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 35;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.85);
+    }
+
+    #placement-banner.active {
+      display: flex;
+    }
+
+    .cancel-place-btn {
+      background: #b71c1c;
+      border: 1px solid #ff8a80;
+      color: #fff;
+      padding: 3px 9px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Briefing Modal (Military Dossier Style) */
     #modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(4, 7, 16, 0.85);
-      backdrop-filter: blur(6px);
+      background: rgba(6, 8, 12, 0.86);
+      backdrop-filter: blur(5px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -695,50 +775,50 @@
     }
 
     .modal-box {
-      background: linear-gradient(180deg, #0d152c 0%, #070b18 100%);
-      border: 2px solid var(--au-cyan);
-      border-radius: 10px;
-      max-width: 680px;
+      background: linear-gradient(180deg, #1d222e 0%, #10131b 100%);
+      border: 3px solid var(--brass-gold);
+      box-shadow: 0 0 40px rgba(157, 43, 245, 0.45);
+      max-width: 700px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 22px 24px;
+      padding: 20px 24px;
       color: var(--text-main);
     }
 
     .modal-studio {
       font-family: 'Orbitron', sans-serif;
       font-size: 11px;
-      color: var(--au-purple);
+      font-weight: 800;
+      color: #e0aaff;
       letter-spacing: 0.14em;
-      text-transform: uppercase;
     }
 
     .modal-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 900;
       color: #fff;
-      margin: 4px 0 12px;
+      margin: 4px 0 10px;
+      text-shadow: 0 2px 6px #000;
     }
 
     .factions-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin: 14px 0;
+      margin: 12px 0;
     }
 
     .faction-card {
-      background: rgba(6, 10, 22, 0.9);
-      border: 1px solid #253969;
-      border-radius: 6px;
+      background: #0d1017;
+      border: 2px solid #384154;
       padding: 10px;
     }
 
-    .faction-card.au { border-top: 3px solid var(--au-cyan); }
-    .faction-card.eagle { border-top: 3px solid var(--eagle-red); }
-    .faction-card.iron { border-top: 3px solid var(--iron-orange); }
+    .faction-card.au { border-top: 4px solid var(--yuri-purple); }
+    .faction-card.eagle { border-top: 4px solid var(--eagle-red); }
+    .faction-card.iron { border-top: 4px solid var(--iron-orange); }
 
     .faction-card h3 {
       font-size: 13px;
@@ -748,18 +828,17 @@
 
     .faction-card p {
       font-size: 11.5px;
-      color: var(--text-muted);
+      color: #a3afc2;
       line-height: 1.35;
     }
 
     .tips-list {
-      background: rgba(0, 240, 255, 0.06);
-      border: 1px solid rgba(0, 240, 255, 0.25);
-      border-radius: 6px;
+      background: rgba(74, 14, 120, 0.25);
+      border: 1px solid #9d2bf5;
       padding: 10px 14px;
       font-size: 12.5px;
       line-height: 1.5;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .tips-list li {
@@ -769,270 +848,231 @@
 
     .start-btn {
       width: 100%;
-      background: linear-gradient(90deg, #00c6ff 0%, #9d00ff 100%);
-      border: none;
+      background: linear-gradient(180deg, #6a1b9a 0%, #38006b 100%);
+      border: 2px solid var(--brass-gold);
       color: #fff;
-      font-family: 'Orbitron', 'Kanit', sans-serif;
+      font-family: 'Orbitron', 'Chakra Petch', sans-serif;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       padding: 12px;
-      border-radius: 6px;
       cursor: pointer;
       letter-spacing: 0.06em;
-      transition: filter 0.15s;
     }
 
     .start-btn:hover {
-      filter: brightness(1.15);
+      background: linear-gradient(180deg, #8e24aa 0%, #4a148c 100%);
     }
 
-    /* Placement Hint Banner */
-    #placement-banner {
-      position: fixed;
-      bottom: 68px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 255, 157, 0.18);
-      border: 1px solid var(--ore-green);
-      color: #fff;
-      padding: 6px 16px;
-      border-radius: 6px;
-      font-size: 13px;
-      z-index: 35;
-      display: none;
-      align-items: center;
-      gap: 10px;
-    }
-
-    #placement-banner.active {
-      display: flex;
-    }
-
-    .cancel-place-btn {
-      background: rgba(255, 42, 75, 0.85);
-      border: none;
-      color: #fff;
-      padding: 3px 9px;
-      border-radius: 4px;
-      font-family: 'Kanit', sans-serif;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    /* Responsive Mobile / iPad Layout */
+    /* Responsive Mobile / iPad */
     @media (max-width: 900px) {
-      #top-hud {
-        right: 230px;
-        height: 50px;
-        padding: 0 8px;
-      }
-      .brand-titles h1 { font-size: 12px; }
+      #top-hud { right: 236px; height: 48px; padding: 0 8px; }
+      .brand-titles h1 { font-size: 11.5px; }
       .brand-titles span { display: none; }
-      .res-pill { min-width: 95px; padding: 3px 8px; }
+      .res-pill { min-width: 96px; padding: 2px 8px; }
       .res-val { font-size: 13px; }
-      #command-sidebar { width: 230px; }
-      #radar-canvas { width: 206px; height: 96px; }
-      #bottom-command-bar { right: 240px; bottom: 8px; left: 8px; }
-      .mode-btn { padding: 5px 8px; font-size: 11.5px; }
+      #command-sidebar { width: 236px; }
+      #radar-canvas { width: 210px; height: 98px; }
+      #bottom-command-bar { right: 244px; bottom: 6px; left: 6px; }
+      .mode-btn { padding: 5px 8px; font-size: 11px; }
       .factions-grid { grid-template-columns: 1fr; }
       #faction-ticker { display: none; }
     }
 
     @media (max-width: 600px) {
-      #top-hud {
-        right: 0;
-        height: 46px;
-      }
-      #command-sidebar {
-        top: 46px;
-        width: 185px;
-      }
-      #radar-canvas { width: 165px; height: 78px; }
-      #bottom-command-bar {
-        right: 192px;
-        bottom: 6px;
-        left: 6px;
-      }
+      #top-hud { right: 0; height: 44px; }
+      #command-sidebar { top: 44px; width: 192px; }
+      #radar-canvas { width: 168px; height: 78px; }
+      .build-scroll { grid-template-columns: 1fr; }
+      #bottom-command-bar { right: 198px; bottom: 4px; left: 4px; }
       .cameo-desc { display: none; }
-      .cameo-icon { width: 32px; height: 32px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 3D Viewport -->
+  <!-- 3D Battlefield Viewport -->
   <div id="game-container"></div>
   <div id="selection-box"></div>
 
-  <!-- Top HUD -->
+  <!-- Top Military Command HUD -->
   <header id="top-hud">
     <div class="brand-block">
-      <div class="brand-emblem">A.U.</div>
+      <div class="brand-emblem" title="A.U. Psi-Cyber Syndicate Emblem">
+        <svg viewBox="0 0 32 32" fill="none">
+          <polygon points="16,2 29,9 29,23 16,30 3,23 3,9" stroke="#d4af37" stroke-width="2" fill="#2b0947"/>
+          <path d="M9 16 C12 10, 20 10, 23 16 C20 22, 12 22, 9 16 Z" stroke="#00d8ff" stroke-width="1.8" fill="#df00ff"/>
+          <circle cx="16" cy="16" r="2.5" fill="#fff"/>
+        </svg>
+      </div>
       <div class="brand-titles">
         <h1>CYBER ALERT 3D: RISE OF A.U.</h1>
-        <span>Commander Achita &amp; General Udom — A.U. Studio</span>
+        <span>COMMANDER ACHITA &amp; GENERAL UDOM — PSI-CYBER DIVISION</span>
       </div>
     </div>
 
     <div class="resources-bar">
-      <div class="res-pill" title="เงินทุนสงคราม (ขุดแร่ Energy Crystal หรือส่งยูนิตเข้าโรงบด Cyber Recycler)">
-        <span class="res-icon">💎</span>
+      <div class="res-pill" title="เงินทุนสงคราม (ขุดแร่ Energy Ore หรือส่งรถถังที่แฮ็กยึดมาเข้าโรงบด Cyber Grinder)">
         <div class="res-info">
-          <span class="res-label">Credits</span>
+          <span class="res-label">WAR CREDITS</span>
           <span class="res-val credits" id="hud-credits">$3,500</span>
         </div>
       </div>
 
-      <div class="res-pill" id="power-pill" title="พลังงานไฟฟ้า (หากไฟไม่พอ ป้อม Signal Override Tower จะยิงช้าลง)">
-        <span class="res-icon">⚡</span>
+      <div class="res-pill" id="power-pill" title="โครงข่ายไฟฟ้าฐานทัพ (หากไฟไม่พอ ป้อม Psychic Signal Tower จะยิงช้าลงมาก)">
         <div class="res-info">
-          <span class="res-label">Power Grid</span>
-          <span class="res-val power-ok" id="hud-power">170 / 70</span>
+          <span class="res-label">POWER OUTPUT</span>
+          <span class="res-val power-ok" id="hud-power">170 / 145</span>
         </div>
       </div>
     </div>
 
     <div class="hud-actions">
-      <button class="hud-btn active" id="btn-audio" title="เปิด/ปิดเสียงสังเคราะห์ Web Audio API">🔊 เสียง: เปิด</button>
-      <button class="hud-btn" id="btn-force-wave" title="เรียกคลื่นทัพ AI บุกทันทีเพื่อทดสอบกองทัพ">🚨 เรียกทัพ AI</button>
-      <button class="hud-btn" id="btn-briefing" title="ดูข้อมูลขั้วอำนาจและคู่มือการรบ">📘 พิมพ์เขียว</button>
+      <button class="hud-btn active" id="btn-audio">🔊 AUDIO: ON</button>
+      <button class="hud-btn" id="btn-force-wave">🚨 เรียกทัพ AI บุก</button>
+      <button class="hud-btn" id="btn-briefing">📋 แฟ้มยุทธการ</button>
     </div>
   </header>
 
   <!-- 3 Superpowers Status Ticker -->
   <aside id="faction-ticker">
     <div class="faction-badge">
-      <span class="faction-name">🟣 A.U. Cyber Syndicate (คุณ)</span>
-      <span class="faction-status" id="stat-au">ONLINE</span>
+      <span class="faction-name">🟣 A.U. Cyber Syndicate (ฝ่ายเรา)</span>
+      <span class="faction-status" id="stat-au">ONLINE (6)</span>
     </div>
     <div class="faction-badge eagle">
       <span class="faction-name">🔴 United Eagle Hegemony (AI 1)</span>
-      <span class="faction-status" id="stat-eagle">ACTIVE</span>
+      <span class="faction-status" id="stat-eagle">ACTIVE (5)</span>
     </div>
     <div class="faction-badge iron">
       <span class="faction-name">🟠 Eurasian Iron Bloc (AI 2)</span>
-      <span class="faction-status" id="stat-iron">ACTIVE</span>
+      <span class="faction-status" id="stat-iron">ACTIVE (4)</span>
     </div>
   </aside>
 
   <!-- EVA Center Alert -->
-  <div id="eva-alert">⚡ ระบบบัญชาการ A.U. ออนไลน์ พร้อมรบ!</div>
+  <div id="eva-alert">⚡ โครงข่ายจิตไซเบอร์ A.U. ออนไลน์ พร้อมรับคำสั่งรบ!</div>
 
   <!-- Placement Mode Hint -->
   <div id="placement-banner">
-    <span id="placement-text">กำลังเลือกพื้นที่วางตึก: แตะ/คลิกบนพื้นสนามรบใกล้ฐานของคุณ</span>
+    <span id="placement-text">กำลังเลือกพิกัดก่อสร้าง: คลิกบนพื้นที่รอบฐานบัญชาการ</span>
     <button class="cancel-place-btn" id="btn-cancel-place">ยกเลิก (ESC)</button>
   </div>
 
-  <!-- Right Sidebar (Red Alert 2 Style) -->
+  <!-- Right Sidebar (Red Alert 2 / Yuri's Revenge Armored Control Panel) -->
   <aside id="command-sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-header-title">A.U. COMMAND LINK</span>
-      <span class="wave-timer-tag" id="wave-timer">WAVE IN 35s</span>
+      <span class="sidebar-header-title">A.U. PSI-COM LINK</span>
+      <span class="wave-timer-tag" id="wave-timer">WAVE: 35s</span>
     </div>
 
     <!-- Tactical Radar Minimap -->
     <div class="radar-wrapper">
-      <canvas id="radar-canvas" width="262" height="126"></canvas>
-      <div class="radar-caption">
-        <span>🟢 แร่ Energy Ore</span>
-        <span>แตะเรดาร์เพื่อย้ายกล้อง</span>
+      <div class="radar-bezel">
+        <canvas id="radar-canvas" width="274" height="132"></canvas>
       </div>
+      <div class="radar-caption">
+        <span>🟡 แร่ Energy Ore</span>
+        <span>คลิกเรดาร์เพื่อย้ายมุมกล้อง</span>
+      </div>
+    </div>
+
+    <!-- Power Load Bar -->
+    <div class="power-strip-bar" title="ระดับพลังงานไฟฟ้าของฐาน">
+      <div id="power-fill-strip"></div>
     </div>
 
     <!-- Sidebar Category Tabs -->
     <div class="sidebar-tabs">
-      <button class="tab-btn active" id="tab-buildings">🏗️ สร้างฐาน (6)</button>
-      <button class="tab-btn" id="tab-units">🤖 ผลิตยูนิต (4)</button>
+      <button class="tab-btn active" id="tab-buildings">🏗️ โครงสร้างฐาน (6)</button>
+      <button class="tab-btn" id="tab-units">⚔️ ยุทโธปกรณ์ (4)</button>
     </div>
 
-    <!-- Buildings List -->
+    <!-- Buildings Cameo Grid -->
     <div class="build-scroll" id="list-buildings"></div>
 
-    <!-- Units List -->
+    <!-- Units Cameo Grid -->
     <div class="build-scroll" id="list-units" style="display: none;"></div>
 
-    <!-- Selected Inspector -->
+    <!-- Selected Unit / Structure Tactical Inspector -->
     <div id="inspector-panel">
       <div>
         <div class="inspector-header">
-          <span class="inspector-name" id="insp-title">A.U. Tactical Cursor</span>
+          <span class="inspector-name" id="insp-title">A.U. TACTICAL CURSOR</span>
           <span class="inspector-count" id="insp-count">0 SELECTED</span>
         </div>
         <div class="inspector-sub" id="insp-desc">
-          ลากเมาส์คลุมเลือกยูนิต หรือใช้ปุ่มโหมดสั่งการด้านล่างสำหรับจอสัมผัส
+          ลากเมาส์ตีกรอบเลือกกองทัพ คลิกขวาเพื่อสั่งโจมตี/แฮ็กยึดรถถังศัตรู
         </div>
       </div>
       <div class="inspector-btns">
-        <button class="insp-btn" id="btn-select-all">⚔️ เลือกกองรบทั้งหมด</button>
+        <button class="insp-btn" id="btn-select-all">⚔️ เลือกทัพทั้งหมด</button>
         <button class="insp-btn recycle-btn" id="btn-send-recycle">♻️ ส่งเข้าโรงบด ($)</button>
       </div>
     </div>
   </aside>
 
-  <!-- Bottom Touch & Mouse Command Bar -->
+  <!-- Bottom Military Touch & Mouse Command Bar -->
   <nav id="bottom-command-bar">
     <div class="cmd-group">
       <button class="mode-btn active" data-mode="select" id="mode-select">
-        🔲 โหมดเลือก (Select)
+         [SELECT] เลือกยูนิต
       </button>
       <button class="mode-btn mode-attack" data-mode="move_attack" id="mode-move-attack">
-        🎯 เดินทัพ / โจมตี / แฮ็ก
+        🎯 [ATTACK / HACK] เคลื่อนพล &amp; ยึด
       </button>
       <button class="mode-btn mode-recycle" data-mode="recycle" id="mode-recycle">
-        ♻️ สั่งเข้าโรงบด (Recycle $)
+        ♻️ [GRINDER $] ส่งเข้าโรงบด
       </button>
       <button class="mode-btn" data-mode="pan" id="mode-pan">
-        ✋ เลื่อนจอ (Pan)
+        ✋ [PAN] เลื่อนกล้อง
       </button>
     </div>
 
     <div class="cmd-group cam-pad">
-      <button class="cam-btn" id="cam-home" title="กลับไปที่ฐาน A.U. Command HQ">🏠</button>
-      <button class="cam-btn" id="cam-zoom-in" title="ซูมเข้า (+)">➕</button>
-      <button class="cam-btn" id="cam-zoom-out" title="ซูมออก (-)">➖</button>
+      <button class="cam-btn" id="cam-home" title="กลับสู่ฐานบัญชาการหลัก A.U.">HQ</button>
+      <button class="cam-btn" id="cam-zoom-in" title="ซูมเข้า (+)">+</button>
+      <button class="cam-btn" id="cam-zoom-out" title="ซูมออก (-)">-</button>
     </div>
   </nav>
 
   <!-- Mission Briefing Modal -->
   <div id="modal-overlay">
     <div class="modal-box">
-      <div class="modal-studio">A.U. STUDIO (ACHITA &amp; UDOM GAMES) PRESENTS</div>
+      <div class="modal-studio">A.U. STUDIO (ACHITA &amp; UDOM GAMES) — CLASSIFIED MILITARY BRIEFING</div>
       <h2 class="modal-title">CYBER ALERT 3D: RISE OF A.U.</h2>
       <p style="font-size: 13px; color: #cbd5e1; line-height: 1.45;">
-        ปี 2030 สมรภูมิไซเบอร์และฝูงโดรนระอุถึงขีดสุด! คุณรับบทผู้บัญชาการสูงสุดร่วมกับ <strong>Commander Achita</strong> และ <strong>General Udom</strong> แห่ง <strong>A.U. Cyber Syndicate</strong> เพื่อต่อกรกับ 2 มหาอำนาจ AI ที่บุกโจมตีจากทางเหนือและตะวันออก!
+        <strong>ปี 2030:</strong> สงครามโลกครั้งใหม่ปะทุขึ้นระหว่าง 3 ขั้วมหาอำนาจทางทหาร คุณคือผู้บัญชาการสูงสุดเคียงข้าง <strong>Commander Achita</strong> และ <strong>General Udom</strong> แห่ง <strong>A.U. Cyber Syndicate</strong> กองทัพพลังจิตไซเบอร์สไตล์ <em>Yuri</em> ยุคใหม่!
       </p>
 
       <div class="factions-grid">
         <div class="faction-card au">
           <h3>🟣 A.U. Cyber Syndicate</h3>
-          <p>ฝ่ายผู้เล่น (สีฟ้า/ม่วงไซเบอร์) เน้นฝูงโดรนพลีชีพ รถถังเลเซอร์ชิ่ง และ <strong>A.U. Hack-Rover</strong> ยิงคลื่นแฮ็กยึดรถถังศัตรูมาเป็นของเราหรือส่งเข้าโรงบดแลกเงินสด!</p>
+          <p>ฝ่ายผู้เล่น (เกราะเหล็กดำ-ม่วง-ฟ้าไซเบอร์) เชี่ยวชาญการยิงคลื่นสมองแฮ็กยึดรถถังศัตรูด้วย <strong>A.U. Hack-Rover (Mastermind)</strong> และโรงบด <strong>Cyber Grinder</strong></p>
         </div>
         <div class="faction-card eagle">
           <h3>🔴 United Eagle Hegemony</h3>
-          <p>บอท AI ที่ 1 (สีแดง/ทอง) มหาอำนาจพญาอินทรีคลั่ง เน้นฝูงรถถังเลเซอร์ Prism และคลื่นดาวเทียมยิงลำแสง</p>
+          <p>บอท AI ที่ 1 (สีแดง/ทอง) มหาอำนาจพญาอินทรีคลั่ง เน้นกองพันรถถังเลเซอร์ <strong>Prism Laser Tank</strong> และป้อมแสงอาทิตย์</p>
         </div>
         <div class="faction-card iron">
           <h3>🟠 Eurasian Iron Bloc</h3>
-          <p>บอท AI ที่ 2 (สีส้ม/เทาเหล็ก) สหพันธรัฐหมีเหล็ก เน้นยานเกราะหนักและยานแม่โดรนยักษ์ <strong>Sky Mothership</strong> ทิ้งระเบิดปูพรม</p>
+          <p>บอท AI ที่ 2 (สีส้ม/เทาเหล็ก) สหพันธรัฐหมีเหล็ก เน้นยานเกราะหนักและเรือเหาะยักษ์ <strong>Sky Mothership (Kirov)</strong> ทิ้งระเบิดปูพรม</p>
         </div>
       </div>
 
       <ul class="tips-list">
-        <li><strong>แฮ็กแล้วย่อยเป็นเงินสด (Yuri Cyber Combo):</strong> ใช้ยูนิต <strong>A.U. Hack-Rover</strong> ยิงคลื่นสีม่วงยึดรถถังศัตรูให้เปลี่ยนสีเป็นฝ่ายเรา แล้วกดปุ่ม <strong>♻️ สั่งเข้าโรงบด (Cyber Recycler)</strong> เพื่อบดเป็นเงินสด Credits ทันที!</li>
-        <li><strong>ระวังระบบไฟฟ้า (Power Grid):</strong> หากค่าไฟฟ้าติดลบ ป้อม <strong>Signal Override Tower</strong> จะทำงานช้าลง ควรสร้าง <strong>Fusion Power Plant</strong> เพิ่มเสมอ</li>
-        <li><strong>รองรับทั้ง PC &amp; Mobile/iPad:</strong> บน PC ลากเมาส์คลุมเลือกยูนิตและคลิกขวาเพื่อสั่งการได้ทันที หรือใช้ปุ่มโหมดคำสั่งด้านล่างสำหรับหน้าจอสัมผัส</li>
+        <li><strong>กลยุทธ์ Yuri (แฮ็กยึดแล้วบดเป็นเงินสด!):</strong> สั่ง <strong>A.U. Hack-Rover</strong> ยิงคลื่นแฮ็กสีม่วงใส่รถถังศัตรูเพื่อยึดมาเป็นฝ่ายเราทันที จากนั้นสั่งเดินเข้าตึก <strong>Cyber Recycler (Grinder)</strong> เพื่อบดเป็นเงินสดเข้าคลัง!</li>
+        <li><strong>ระวังกระแสไฟฟ้าฐานทัพ:</strong> หากไฟติดลบ ป้อม <strong>Signal Override Tower (Psychic Tower)</strong> จะยิงช้าลง ควรสร้าง <strong>Fusion Power Plant</strong> เสริมเสมอ</li>
+        <li><strong>รองรับทั้งเมาส์ PC และจอสัมผัส:</strong> ลากเมาส์ตีกรอบเลือกกองทัพและคลิกขวาเพื่อสั่งโจมตี หรือใช้แถบโหมดคำสั่งด้านล่างบนมือถือ/iPad</li>
       </ul>
 
-      <button class="start-btn" id="btn-start-mission">⚡ เข้าสู่สมรภูมิ (INITIALIZE BATTLEFIELD)</button>
+      <button class="start-btn" id="btn-start-mission">⚔️ เริ่มปฏิบัติการทางทหาร (DEPLOY TO BATTLEFIELD)</button>
     </div>
   </div>
 
   <script>
     /********************************************************************
-     * CYBER ALERT 3D: Rise of A.U.
+     * CYBER ALERT 3D: Rise of A.U. (Military & Yuri's Revenge Edition)
      * Developed by A.U. Studio (Achita & Udom Games)
-     * Full Three.js Isometric 3D RTS Engine + Web Audio Synthesizer
      ********************************************************************/
 
     // === 1. PROCEDURAL WEB AUDIO SYNTHESIZER ===
@@ -1045,9 +1085,7 @@
       init() {
         if (!this.ctx) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) {
-            this.ctx = new AudioCtx();
-          }
+          if (AudioCtx) this.ctx = new AudioCtx();
         }
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume();
@@ -1069,17 +1107,17 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        osc.type = isPrism ? 'sawtooth' : 'triangle';
-        osc.frequency.setValueAtTime(isPrism ? 980 : 680, now);
-        osc.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+        osc.type = isPrism ? 'sawtooth' : 'square';
+        osc.frequency.setValueAtTime(isPrism ? 920 : 620, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
 
-        gain.gain.setValueAtTime(0.14, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+        gain.gain.setValueAtTime(0.13, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.21);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.19);
+        osc.stop(now + 0.21);
       }
 
       playHackWave() {
@@ -1087,32 +1125,35 @@
         this.init();
         if (!this.ctx) return;
 
+        // Classic Yuri Mind Control Psi-chord sound
         const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
-        const gain = this.ctx.createGain();
+        [240, 360, 480].forEach((freq) => {
+          const osc = this.ctx.createOscillator();
+          const lfo = this.ctx.createOscillator();
+          const lfoGain = this.ctx.createGain();
+          const gain = this.ctx.createGain();
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.linearRampToValueAtTime(760, now + 0.45);
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.linearRampToValueAtTime(freq * 1.45, now + 0.55);
 
-        lfo.type = 'square';
-        lfo.frequency.setValueAtTime(28, now);
-        lfoGain.gain.setValueAtTime(75, now);
+          lfo.type = 'sine';
+          lfo.frequency.setValueAtTime(18, now);
+          lfoGain.gain.setValueAtTime(35, now);
 
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
 
-        gain.gain.setValueAtTime(0.16, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.56);
 
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        lfo.start(now);
-        osc.stop(now + 0.46);
-        lfo.stop(now + 0.46);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          lfo.start(now);
+          osc.stop(now + 0.56);
+          lfo.stop(now + 0.56);
+        });
       }
 
       playExplosion(heavy = false) {
@@ -1121,7 +1162,7 @@
         if (!this.ctx) return;
 
         const now = this.ctx.currentTime;
-        const dur = heavy ? 0.55 : 0.32;
+        const dur = heavy ? 0.6 : 0.34;
         const bufferSize = this.ctx.sampleRate * dur;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
@@ -1134,11 +1175,11 @@
 
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(heavy ? 360 : 580, now);
-        filter.frequency.exponentialRampToValueAtTime(60, now + dur);
+        filter.frequency.setValueAtTime(heavy ? 320 : 540, now);
+        filter.frequency.exponentialRampToValueAtTime(48, now + dur);
 
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(heavy ? 0.28 : 0.18, now);
+        gain.gain.setValueAtTime(heavy ? 0.3 : 0.19, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
         noise.connect(filter);
@@ -1152,19 +1193,21 @@
         this.init();
         if (!this.ctx) return;
 
+        // Grinder crunch + cash register chime
+        this.playExplosion(false);
         const now = this.ctx.currentTime;
-        const notes = [523.25, 659.25, 783.99, 1046.5];
+        const notes = [587.33, 783.99, 987.77, 1174.66];
         notes.forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
-          gain.gain.setValueAtTime(0.14, now + idx * 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.18);
+          osc.frequency.setValueAtTime(freq, now + 0.08 + idx * 0.055);
+          gain.gain.setValueAtTime(0.15, now + 0.08 + idx * 0.055);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08 + idx * 0.055 + 0.18);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(now + idx * 0.06);
-          osc.stop(now + idx * 0.06 + 0.18);
+          osc.start(now + 0.08 + idx * 0.055);
+          osc.stop(now + 0.08 + idx * 0.055 + 0.18);
         });
       }
 
@@ -1177,18 +1220,18 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(420, now);
-        osc.frequency.linearRampToValueAtTime(840, now + 0.35);
-        osc.frequency.linearRampToValueAtTime(420, now + 0.7);
-        osc.frequency.linearRampToValueAtTime(840, now + 1.05);
+        osc.frequency.setValueAtTime(360, now);
+        osc.frequency.linearRampToValueAtTime(740, now + 0.4);
+        osc.frequency.linearRampToValueAtTime(360, now + 0.8);
+        osc.frequency.linearRampToValueAtTime(740, now + 1.15);
 
         gain.gain.setValueAtTime(0.14, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 1.15);
+        osc.stop(now + 1.25);
       }
 
       playUiClick() {
@@ -1198,107 +1241,120 @@
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, now);
-        gain.gain.setValueAtTime(0.07, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(720, now);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.06);
+        osc.stop(now + 0.05);
       }
     }
 
     const sfx = new CyberAudioEngine();
 
-    // === 2. FACTIONS, BUILDINGS & UNITS DEFINITIONS ===
+    // === 2. FACTIONS, SVG CAMEOS, BUILDINGS & UNITS ===
     const FACTIONS = {
       AU: {
         id: 'AU',
         name: 'A.U. Cyber Syndicate',
-        primary: 0x00f0ff,
-        secondary: 0xb829ff,
-        css: '#00f0ff'
+        hull: 0x262936,      // Dark gunmetal military armor
+        armor: 0x3b2354,     // Dark Yuri violet armor plate
+        primary: 0xb829ff,   // Psi-purple energy
+        secondary: 0x00e5ff, // Cyber cyan optics
+        css: '#b829ff'
       },
       EAGLE: {
         id: 'EAGLE',
         name: 'United Eagle Hegemony',
-        primary: 0xff2a4b,
-        secondary: 0xffcc00,
-        css: '#ff2a4b'
+        hull: 0x362b28,
+        armor: 0x7a1c1c,     // Crimson military armor
+        primary: 0xff2a2a,   // Red laser
+        secondary: 0xffc400, // Gold trim
+        css: '#ff3333'
       },
       IRON: {
         id: 'IRON',
         name: 'Eurasian Iron Bloc',
-        primary: 0xff7700,
-        secondary: 0x94a3b8,
-        css: '#ff7700'
+        hull: 0x2b2d2f,
+        armor: 0x5c3818,     // Heavy rust-orange/brown steel
+        primary: 0xff7700,   // Orange plasma
+        secondary: 0x94a3b8, // Heavy iron
+        css: '#ff8800'
       }
+    };
+
+    const CAMEO_SVGS = {
+      hq: `<svg viewBox="0 0 48 48"><polygon points="6,40 42,40 38,26 10,26" fill="#2e3545" stroke="#9aa5b8" stroke-width="1.5"/><polygon points="14,26 34,26 30,14 18,14" fill="#4a1575" stroke="#d4af37" stroke-width="1.5"/><circle cx="24" cy="11" r="6" fill="#df00ff" stroke="#00e5ff" stroke-width="1.5"/><line x1="10" y1="26" x2="10" y2="12" stroke="#00e5ff" stroke-width="2"/><line x1="38" y1="26" x2="38" y2="12" stroke="#00e5ff" stroke-width="2"/></svg>`,
+      power: `<svg viewBox="0 0 48 48"><rect x="8" y="28" width="32" height="12" fill="#2e3545" stroke="#9aa5b8"/><polygon points="12,28 22,28 20,10 14,10" fill="#3a4358" stroke="#00e5ff"/><polygon points="26,28 36,28 34,10 28,10" fill="#3a4358" stroke="#00e5ff"/><circle cx="17" cy="18" r="3" fill="#00ff88"/><circle cx="31" cy="18" r="3" fill="#00ff88"/></svg>`,
+      refinery: `<svg viewBox="0 0 48 48"><rect x="6" y="24" width="36" height="16" fill="#2e3545" stroke="#d4af37"/><rect x="10" y="10" width="8" height="16" fill="#4c566d"/><rect x="20" y="10" width="8" height="16" fill="#4c566d"/><polygon points="32,24 40,24 38,14 34,14" fill="#ff9900"/><circle cx="36" cy="34" r="4" fill="#00ff88"/></svg>`,
+      factory: `<svg viewBox="0 0 48 48"><rect x="6" y="18" width="36" height="22" fill="#283040" stroke="#9aa5b8" stroke-width="1.5"/><polygon points="6,18 16,10 32,10 42,18" fill="#4a1575" stroke="#d4af37"/><rect x="15" y="25" width="18" height="15" fill="#0b0e14" stroke="#f5b700" stroke-width="1.5"/></svg>`,
+      tower: `<svg viewBox="0 0 48 48"><polygon points="16,42 32,42 28,26 20,26" fill="#2e3545" stroke="#9aa5b8"/><line x1="24" y1="26" x2="24" y2="10" stroke="#d4af37" stroke-width="3"/><ellipse cx="24" cy="20" rx="9" ry="3" fill="none" stroke="#df00ff" stroke-width="2"/><ellipse cx="24" cy="14" rx="7" ry="2.5" fill="none" stroke="#00e5ff" stroke-width="2"/><circle cx="24" cy="8" r="4" fill="#df00ff"/></svg>`,
+      recycler: `<svg viewBox="0 0 48 48"><rect x="6" y="20" width="36" height="20" fill="#2b2618" stroke="#f5b700" stroke-width="2"/><circle cx="18" cy="28" r="6" fill="#525c70" stroke="#ff3333" stroke-width="1.5"/><circle cx="30" cy="28" r="6" fill="#525c70" stroke="#ff3333" stroke-width="1.5"/><polygon points="14,40 34,40 30,33 18,33" fill="#00e676"/></svg>`,
+      kamikaze: `<svg viewBox="0 0 48 48"><polygon points="24,8 38,34 24,28 10,34" fill="#4a1575" stroke="#00e5ff" stroke-width="1.5"/><circle cx="24" cy="18" r="3.5" fill="#ff2a2a"/><circle cx="12" cy="22" r="4" fill="none" stroke="#9aa5b8" stroke-width="1.5"/><circle cx="36" cy="22" r="4" fill="none" stroke="#9aa5b8" stroke-width="1.5"/></svg>`,
+      prism: `<svg viewBox="0 0 48 48"><rect x="8" y="28" width="32" height="10" rx="3" fill="#283040" stroke="#9aa5b8" stroke-width="1.5"/><rect x="14" y="20" width="20" height="8" fill="#4a1575" stroke="#d4af37"/><polygon points="24,8 31,20 17,20" fill="#00e5ff" stroke="#fff" stroke-width="1"/><line x1="24" y1="14" x2="42" y2="14" stroke="#00e5ff" stroke-width="2.5"/></svg>`,
+      hackrover: `<svg viewBox="0 0 48 48"><rect x="8" y="30" width="32" height="9" rx="3" fill="#232834" stroke="#d4af37" stroke-width="1.5"/><ellipse cx="24" cy="21" rx="11" ry="9" fill="#b829ff" stroke="#00e5ff" stroke-width="1.5"/><path d="M17 19 Q24 13 31 19" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M18 24 Q24 28 30 24" stroke="#fff" stroke-width="1.5" fill="none"/></svg>`,
+      mothership: `<svg viewBox="0 0 48 48"><ellipse cx="24" cy="22" rx="18" ry="9" fill="#4a1575" stroke="#d4af37" stroke-width="2"/><line x1="10" y1="22" x2="38" y2="22" stroke="#f5b700" stroke-width="2"/><polygon points="8,22 4,14 14,18" fill="#ff2a2a"/><rect x="16" y="31" width="16" height="5" fill="#232834" stroke="#00e5ff"/></svg>`
     };
 
     const BUILDING_CATALOG = [
       {
         type: 'hq',
         name: 'A.U. Command HQ',
-        icon: '🏛️',
         cost: 1500,
         power: 50,
-        hp: 2200,
-        radius: 5.2,
-        desc: 'ฐานบัญชาการหลักของ Commander Achita & General Udom'
+        hp: 2500,
+        radius: 6.0,
+        desc: 'ป้อมบัญชาการใหญ่สไตล์ Yuri Citadel ของ Achita & Udom'
       },
       {
         type: 'power',
         name: 'Fusion Power Plant',
-        icon: '⚡',
         cost: 400,
         power: 120,
-        hp: 750,
-        radius: 3.4,
-        desc: 'โรงไฟฟ้าฟิวชัน หากไฟติดลบ ป้อมปืนจะยิงช้าลงมาก'
+        hp: 850,
+        radius: 4.0,
+        desc: 'เตาปฏิกรณ์ Bio-Fusion คู่ หากไฟติดลบป้อมจะยิงช้าลง'
       },
       {
         type: 'refinery',
         name: 'Ore Refinery + Harvester',
-        icon: '🏭',
         cost: 800,
         power: -30,
-        hp: 1100,
-        radius: 4.4,
-        desc: 'โรงถลุงแร่ แถมฟรีรถขุดแร่ Harvester วิ่งเก็บเงินอัตโนมัติ'
+        hp: 1200,
+        radius: 5.0,
+        desc: 'โรงถลุงแร่พร้อมรถขุดหุ้มเกราะ War Miner ฟรี 1 คัน'
       },
       {
         type: 'factory',
         name: 'Cyber & Drone Factory',
-        icon: '🤖',
         cost: 700,
         power: -40,
-        hp: 1250,
-        radius: 4.6,
-        desc: 'โรงงานผลิตกองทัพโดรน รถถังเลเซอร์ และ Hack-Rover'
+        hp: 1350,
+        radius: 5.2,
+        desc: 'โรงงานสรรพาวุธผลิตกองทัพโดรน รถถัง และ Hack-Rover'
       },
       {
         type: 'tower',
         name: 'Signal Override Tower',
-        icon: '📡',
         cost: 500,
         power: -50,
-        hp: 850,
-        radius: 2.6,
-        range: 28,
-        damage: 38,
-        cooldown: 1.0,
-        desc: 'ป้อมเสาสัญญาณยิงลำแสงป้องกันฐาน (ใช้ไฟฟ้าสูง)'
+        hp: 900,
+        radius: 3.0,
+        range: 30,
+        damage: 42,
+        cooldown: 0.95,
+        desc: 'ป้อมเสาจิตสังหาร Psychic Tesla ยิงสายฟ้าป้องกันฐาน'
       },
       {
         type: 'recycler',
         name: 'Cyber Recycler',
-        icon: '♻️',
         cost: 600,
         power: -25,
-        hp: 950,
-        radius: 4.0,
-        desc: 'โรงบดรีไซเคิล! สั่งยูนิตที่แฮ็กยึดมาเดินเข้าตึกนี้เพื่อบดเป็นเงินสด!'
+        hp: 1050,
+        radius: 4.6,
+        desc: 'โรงบดเหล็ก Grinder! สั่งรถถังที่แฮ็กยึดมาวิ่งเข้าบดเป็นเงินสด!'
       }
     ];
 
@@ -1306,77 +1362,70 @@
       {
         type: 'kamikaze',
         name: 'FPV Kamikaze Drone',
-        icon: '💥',
         cost: 150,
-        hp: 140,
-        speed: 19,
+        hp: 150,
+        speed: 20,
         range: 4.2,
-        damage: 210,
+        damage: 220,
         cooldown: 0.2,
         flying: true,
-        flyHeight: 4.2,
-        recycleValue: 110,
-        desc: 'ฝูงโดรนพลีชีพความเร็วสูง พุ่งชนเป้าหมายระเบิดเป็นกลุ่ม'
+        flyHeight: 4.5,
+        recycleValue: 115,
+        desc: 'ฝูงโดรนสังหารติดหัวรบพุ่งชนเป้าหมายระเบิดเป็นกลุ่ม'
       },
       {
         type: 'prism',
         name: 'Prism Laser Tank',
-        icon: '🔦',
         cost: 450,
-        hp: 460,
-        speed: 9.5,
-        range: 25,
-        damage: 55,
-        cooldown: 1.35,
+        hp: 500,
+        speed: 9.8,
+        range: 26,
+        damage: 58,
+        cooldown: 1.3,
         flying: false,
-        recycleValue: 340,
-        desc: 'รถถังยิงลำแสงเลเซอร์ชิ่งกระจายใส่ศัตรูรอบข้าง'
+        recycleValue: 350,
+        desc: 'รถถังสายพานติดป้อมปืนเลเซอร์ปริซึม ยิงชิ่งกระจายใส่ศัตรู'
       },
       {
         type: 'hackrover',
         name: 'A.U. Hack-Rover',
-        icon: '🧠',
         cost: 650,
-        hp: 380,
+        hp: 420,
         speed: 10.5,
-        range: 22,
+        range: 23,
         damage: 0,
-        cooldown: 2.2,
-        hackDuration: 1.6,
+        cooldown: 2.1,
         flying: false,
-        recycleValue: 450,
-        desc: 'ยูนิตพระเอกสไตล์ Yuri! ยิงคลื่นแฮ็กสีม่วงยึดรถถังศัตรูมาเป็นฝ่ายเราทันที!'
+        recycleValue: 480,
+        desc: 'รถถังพลังจิต Mastermind สไตล์ Yuri! ยิงคลื่นแฮ็กยึดรถถังศัตรูทันที!'
       },
       {
         type: 'mothership',
         name: 'Sky Mothership',
-        icon: '🛸',
         cost: 1200,
-        hp: 1650,
-        speed: 5.8,
-        range: 20,
-        damage: 135,
-        cooldown: 2.1,
+        hp: 1800,
+        speed: 6.0,
+        range: 21,
+        damage: 145,
+        cooldown: 2.0,
         flying: true,
-        flyHeight: 11.5,
-        recycleValue: 850,
-        desc: 'ยานแม่โดรนยักษ์ลอยฟ้าสไตล์ Kirov อึดถึกทน ทิ้งระเบิดปูพรม'
+        flyHeight: 12.5,
+        recycleValue: 900,
+        desc: 'เรือเหาะยักษ์หุ้มเกราะสไตล์ Kirov Airship ทิ้งระเบิดปูพรม'
       },
-      // Special economy unit spawned with Ore Refinery
       {
         type: 'harvester',
-        name: 'Cyber Ore Harvester',
-        icon: '🚜',
+        name: 'Armored War Harvester',
         cost: 350,
-        hp: 650,
-        speed: 8.2,
+        hp: 750,
+        speed: 8.5,
         range: 0,
         damage: 0,
         cooldown: 1,
         flying: false,
         hiddenFromMenu: true,
-        recycleValue: 260,
-        desc: 'รถขุดแร่ Energy Crystal Ore อัตโนมัติ'
+        recycleValue: 280,
+        desc: 'รถตักแร่หุ้มเกราะหนักเก็บเกี่ยวแร่เข้าโรงถลุงอัตโนมัติ'
       }
     ];
 
@@ -1386,12 +1435,11 @@
       powerProduced: 0,
       powerConsumed: 0,
       lowPower: false,
-      commandMode: 'select', // 'select' | 'move_attack' | 'recycle' | 'pan'
+      commandMode: 'select',
       placingBuildingType: null,
       buildings: [],
       units: [],
       oreNodes: [],
-      projectiles: [],
       beams: [],
       particles: [],
       selectedUnits: [],
@@ -1401,13 +1449,13 @@
       nextId: 1
     };
 
-    // === 4. THREE.JS SCENE & ISOMETRIC CAMERA SETUP ===
+    // === 4. PROCEDURAL TEXTURES & THREE.JS MILITARY BATTLEFIELD ===
     const container = document.getElementById('game-container');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050812);
-    scene.fog = new THREE.FogExp2(0x050812, 0.0032);
+    scene.background = new THREE.Color(0x12151e);
+    scene.fog = new THREE.FogExp2(0x12151e, 0.0024);
 
-    const MAP_SIZE = 180; // -90 to +90
+    const MAP_SIZE = 190;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1416,120 +1464,228 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Isometric-style Perspective Camera
-    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 500);
-    const camTarget = new THREE.Vector3(-38, 0, 38); // Start looking at Player Base (South-West)
-    let camZoom = 78; // Distance factor
-    const camAngle = Math.PI / 4; // 45 deg isometric angle
+    // Camera
+    const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 1, 500);
+    const camTarget = new THREE.Vector3(-42, 0, 42);
+    let camZoom = 72;
+    const camAngle = Math.PI / 4;
 
     function updateCameraTransform() {
       camTarget.x = Math.max(-MAP_SIZE * 0.48, Math.min(MAP_SIZE * 0.48, camTarget.x));
       camTarget.z = Math.max(-MAP_SIZE * 0.48, Math.min(MAP_SIZE * 0.48, camTarget.z));
       camera.position.set(
-        camTarget.x - Math.sin(camAngle) * camZoom * 0.85,
-        camZoom * 0.78,
-        camTarget.z + Math.cos(camAngle) * camZoom * 0.85
+        camTarget.x - Math.sin(camAngle) * camZoom * 0.84,
+        camZoom * 0.76,
+        camTarget.z + Math.cos(camAngle) * camZoom * 0.84
       );
       camera.lookAt(camTarget);
     }
     updateCameraTransform();
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x6b8cff, 0.75);
-    scene.add(ambientLight);
+    // Strong Military Lighting so every tank, tread, turret, and bunker is crisp and visible
+    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x2e261d, 0.95);
+    scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xdff4ff, 1.15);
-    dirLight.position.set(-55, 95, 65);
+    const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.35);
+    dirLight.position.set(-65, 110, 75);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     dirLight.shadow.camera.near = 10;
-    dirLight.shadow.camera.far = 260;
-    const d = 110;
+    dirLight.shadow.camera.far = 280;
+    const d = 115;
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
     scene.add(dirLight);
 
-    // Ground Battlefield Plane
-    const groundGeo = new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 36, 36);
-    groundGeo.rotateX(-Math.PI / 2);
-    // Subtle terrain height variations at outer edges
-    const posAttr = groundGeo.attributes.position;
-    for (let i = 0; i < posAttr.count; i++) {
-      const vx = posAttr.getX(i);
-      const vz = posAttr.getZ(i);
-      if (Math.abs(vx) > 82 || Math.abs(vz) > 82) {
-        posAttr.setY(i, 1.5);
-      }
-    }
-    groundGeo.computeVertexNormals();
+    // Generate Realistic Scorched Earth + Asphalt Roads + Concrete Base Texture
+    function createBattlefieldTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
 
+      // Base military wasteland earth
+      ctx.fillStyle = '#252822';
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      // Dirt & grass patches
+      for (let i = 0; i < 4500; i++) {
+        const x = Math.random() * 1024;
+        const y = Math.random() * 1024;
+        const r = 2 + Math.random() * 10;
+        ctx.fillStyle = Math.random() > 0.45 ? 'rgba(48, 54, 40, 0.35)' : 'rgba(26, 28, 24, 0.4)';
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Shell craters
+      for (let i = 0; i < 45; i++) {
+        const x = Math.random() * 1024;
+        const y = Math.random() * 1024;
+        const r = 8 + Math.random() * 18;
+        const grad = ctx.createRadialGradient(x, y, r * 0.1, x, y, r);
+        grad.addColorStop(0, 'rgba(10, 11, 10, 0.75)');
+        grad.addColorStop(0.7, 'rgba(38, 35, 29, 0.5)');
+        grad.addColorStop(1, 'rgba(37, 40, 34, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Military Asphalt Highway Network connecting the 3 bases
+      ctx.strokeStyle = '#1d2026';
+      ctx.lineWidth = 44;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      // SW (Player) to NE (Eagle)
+      ctx.moveTo(210, 810);
+      ctx.lineTo(810, 210);
+      // NW (Iron) to Center
+      ctx.moveTo(230, 210);
+      ctx.lineTo(512, 512);
+      ctx.stroke();
+
+      // Road dashed yellow center lines
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([16, 16]);
+      ctx.beginPath();
+      ctx.moveTo(210, 810);
+      ctx.lineTo(810, 210);
+      ctx.moveTo(230, 210);
+      ctx.lineTo(512, 512);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Subtle tactical grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
+      ctx.lineWidth = 1;
+      for (let g = 0; g <= 1024; g += 32) {
+        ctx.beginPath();
+        ctx.moveTo(g, 0);
+        ctx.lineTo(g, 1024);
+        ctx.moveTo(0, g);
+        ctx.lineTo(1024, g);
+        ctx.stroke();
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    // Hazard Stripe Texture for Base Foundations & Grinder
+    function createHazardTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#181a20';
+      ctx.fillRect(0, 0, 128, 128);
+      ctx.fillStyle = '#e0a800';
+      for (let i = -128; i < 256; i += 32) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + 16, 0);
+        ctx.lineTo(i - 16 + 128, 128);
+        ctx.lineTo(i - 32 + 128, 128);
+        ctx.closePath();
+        ctx.fill();
+      }
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(4, 4);
+      return tex;
+    }
+    const hazardTex = createHazardTexture();
+
+    const groundGeo = new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 48, 48);
+    groundGeo.rotateX(-Math.PI / 2);
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x0b1326,
-      roughness: 0.88,
-      metalness: 0.22
+      map: createBattlefieldTexture(),
+      roughness: 0.92,
+      metalness: 0.08
     });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.receiveShadow = true;
     scene.add(groundMesh);
 
-    // Tactical Cyber Grid Overlay
-    const gridHelper = new THREE.GridHelper(MAP_SIZE, 45, 0x00f0ff, 0x16264c);
-    gridHelper.position.y = 0.05;
-    gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.42;
-    scene.add(gridHelper);
+    // Fortified Concrete Base Tarmac & Perimeter Walls
+    function createFortifiedBaseZone(cx, cz, factionKey, size = 38) {
+      const f = FACTIONS[factionKey];
+      const group = new THREE.Group();
+      group.position.set(cx, 0.06, cz);
 
-    // Base Territory Pads
-    function createTerritoryPad(x, z, colorHex, size = 34) {
-      const geo = new THREE.RingGeometry(size * 0.46, size * 0.5, 4);
-      geo.rotateX(-Math.PI / 2);
-      geo.rotateY(Math.PI / 4);
-      const mat = new THREE.MeshBasicMaterial({
-        color: colorHex,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.35
+      // Concrete Tarmac Slab
+      const slab = new THREE.Mesh(
+        new THREE.BoxGeometry(size, 0.2, size),
+        new THREE.MeshStandardMaterial({ color: 0x242832, roughness: 0.85, metalness: 0.2 })
+      );
+      slab.receiveShadow = true;
+      group.add(slab);
+
+      // Corner Concrete Bunker Pillars
+      const half = size / 2;
+      const corners = [
+        [-half, -half], [half, -half], [-half, half], [half, half]
+      ];
+      corners.forEach(([x, z]) => {
+        const post = new THREE.Mesh(
+          new THREE.BoxGeometry(2.2, 2.2, 2.2),
+          new THREE.MeshStandardMaterial({ color: 0x383f4f, roughness: 0.6, metalness: 0.5 })
+        );
+        post.position.set(x, 1.1, z);
+        post.castShadow = true;
+        const beacon = new THREE.Mesh(
+          new THREE.BoxGeometry(0.9, 0.5, 0.9),
+          new THREE.MeshBasicMaterial({ color: f.primary })
+        );
+        beacon.position.set(x, 2.4, z);
+        group.add(post, beacon);
       });
-      const ring = new THREE.Mesh(geo, mat);
-      ring.position.set(x, 0.08, z);
-      scene.add(ring);
-    }
-    createTerritoryPad(-48, 48, FACTIONS.AU.primary, 46);
-    createTerritoryPad(48, -48, FACTIONS.EAGLE.primary, 42);
-    createTerritoryPad(-42, -50, FACTIONS.IRON.primary, 40);
 
-    // Ghost Placement Hologram Mesh
+      scene.add(group);
+    }
+
+    createFortifiedBaseZone(-48, 48, 'AU', 42);
+    createFortifiedBaseZone(48, -48, 'EAGLE', 40);
+    createFortifiedBaseZone(-44, -48, 'IRON', 38);
+
+    // Ghost Placement Hologram
     const ghostGroup = new THREE.Group();
-    const ghostRingGeo = new THREE.RingGeometry(3.2, 3.8, 32);
-    ghostRingGeo.rotateX(-Math.PI / 2);
-    const ghostRingMat = new THREE.MeshBasicMaterial({ color: 0x00ff9d, side: THREE.DoubleSide });
-    const ghostRing = new THREE.Mesh(ghostRingGeo, ghostRingMat);
-    const ghostBox = new THREE.Mesh(
-      new THREE.BoxGeometry(5, 4, 5),
-      new THREE.MeshBasicMaterial({ color: 0x00ff9d, wireframe: true })
+    const ghostPad = new THREE.Mesh(
+      new THREE.BoxGeometry(8, 0.3, 8),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.38 })
     );
-    ghostBox.position.y = 2;
-    ghostGroup.add(ghostRing, ghostBox);
+    const ghostWire = new THREE.Mesh(
+      new THREE.BoxGeometry(7.6, 4.5, 7.6),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true })
+    );
+    ghostWire.position.y = 2.25;
+    ghostGroup.add(ghostPad, ghostWire);
     ghostGroup.visible = false;
     scene.add(ghostGroup);
 
-    // === 5. 3D MODEL GENERATORS (BUILDINGS, UNITS, ORE) ===
-    function createHealthBarMesh(width = 4.2, height = 0.45) {
+    // === 5. DETAILED 3D MILITARY & YURI MODELS ===
+    function createHealthBarMesh(width = 4.6, height = 0.5) {
       const group = new THREE.Group();
       const bg = new THREE.Mesh(
         new THREE.PlaneGeometry(width, height),
-        new THREE.MeshBasicMaterial({ color: 0x090d16, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ color: 0x06080c, side: THREE.DoubleSide })
       );
-      const fgGeo = new THREE.PlaneGeometry(width - 0.16, height - 0.14);
-      fgGeo.translate((width - 0.16) / 2, 0, 0);
+      const fgGeo = new THREE.PlaneGeometry(width - 0.18, height - 0.16);
+      fgGeo.translate((width - 0.18) / 2, 0, 0);
       const fg = new THREE.Mesh(
         fgGeo,
-        new THREE.MeshBasicMaterial({ color: 0x00ff9d, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ color: 0x00ff66, side: THREE.DoubleSide })
       );
-      fg.position.x = -(width - 0.16) / 2;
+      fg.position.x = -(width - 0.18) / 2;
       fg.position.z = 0.02;
       group.add(bg, fg);
       group.rotation.x = -Math.PI / 4;
@@ -1539,102 +1695,187 @@
     }
 
     function buildStructureMesh(type, faction) {
-      const fInfo = FACTIONS[faction];
+      const f = FACTIONS[faction];
       const group = new THREE.Group();
 
-      const baseMat = new THREE.MeshStandardMaterial({
-        color: 0x1a243d,
-        roughness: 0.5,
-        metalness: 0.6
+      const steelMat = new THREE.MeshStandardMaterial({
+        color: f.hull,
+        roughness: 0.55,
+        metalness: 0.65
       });
-      const accentMat = new THREE.MeshStandardMaterial({
-        color: fInfo.primary,
-        emissive: fInfo.primary,
-        emissiveIntensity: 0.45,
-        roughness: 0.3,
-        metalness: 0.7
+      const armorMat = new THREE.MeshStandardMaterial({
+        color: f.armor,
+        roughness: 0.45,
+        metalness: 0.55
       });
-      const subMat = new THREE.MeshStandardMaterial({
-        color: fInfo.secondary,
-        emissive: fInfo.secondary,
-        emissiveIntensity: 0.3,
-        roughness: 0.35
+      const brassMat = new THREE.MeshStandardMaterial({
+        color: 0xc59b27,
+        roughness: 0.35,
+        metalness: 0.8
+      });
+      const glowMat = new THREE.MeshStandardMaterial({
+        color: f.primary,
+        emissive: f.primary,
+        emissiveIntensity: 0.65,
+        roughness: 0.25
+      });
+      const subGlowMat = new THREE.MeshStandardMaterial({
+        color: f.secondary,
+        emissive: f.secondary,
+        emissiveIntensity: 0.55
+      });
+      const hazardMat = new THREE.MeshStandardMaterial({
+        map: hazardTex,
+        roughness: 0.6
       });
 
       if (type === 'hq') {
-        const pad = new THREE.Mesh(new THREE.BoxGeometry(9.2, 1.0, 9.2), baseMat);
-        pad.position.y = 0.5;
-        const core = new THREE.Mesh(new THREE.OctahedronGeometry(3.2, 0), accentMat);
-        core.position.y = 4.6;
-        const spire1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 6.5, 1.4), subMat);
-        spire1.position.set(-3.2, 3.2, -3.2);
-        const spire2 = spire1.clone();
-        spire2.position.set(3.2, 3.2, -3.2);
-        const spire3 = spire1.clone();
-        spire3.position.set(-3.2, 3.2, 3.2);
-        const spire4 = spire1.clone();
-        spire4.position.set(3.2, 3.2, 3.2);
-        group.add(pad, core, spire1, spire2, spire3, spire4);
-        group.userData.rotPart = core;
-      } else if (type === 'power') {
-        const pad = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.6, 1.2, 12), baseMat);
-        pad.position.y = 0.6;
-        const dome = new THREE.Mesh(new THREE.SphereGeometry(2.3, 16, 12), accentMat);
-        dome.position.y = 2.0;
-        const torus = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.28, 8, 24), subMat);
-        torus.rotation.x = Math.PI / 2;
-        torus.position.y = 2.4;
-        group.add(pad, dome, torus);
-        group.userData.rotPart = torus;
-      } else if (type === 'refinery') {
-        const pad = new THREE.Mesh(new THREE.BoxGeometry(7.8, 1.2, 7.2), baseMat);
-        pad.position.y = 0.6;
-        const silo1 = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 5.2, 12), accentMat);
-        silo1.position.set(-2.2, 2.8, -1.6);
-        const silo2 = silo1.clone();
-        silo2.position.set(0.2, 2.8, -1.6);
-        const bay = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.6, 3.8), subMat);
-        bay.position.set(2.0, 1.8, 1.2);
-        group.add(pad, silo1, silo2, bay);
-      } else if (type === 'factory') {
-        const body = new THREE.Mesh(new THREE.BoxGeometry(8.2, 3.4, 7.6), baseMat);
-        body.position.y = 1.7;
-        const roof = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.8, 6.2), accentMat);
-        roof.position.y = 3.8;
-        const gate = new THREE.Mesh(new THREE.BoxGeometry(3.8, 2.4, 0.6), subMat);
-        gate.position.set(0, 1.2, 3.8);
-        const Dish = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.8, 6), accentMat);
-        Dish.position.set(-2.2, 5.0, -1.5);
-        group.add(body, roof, gate, Dish);
-        group.userData.rotPart = Dish;
-      } else if (type === 'tower') {
-        const base = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.3, 1.8, 8), baseMat);
-        base.position.y = 0.9;
-        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 1.1, 5.2, 8), subMat);
-        mast.position.y = 3.6;
-        const emitter = new THREE.Mesh(new THREE.OctahedronGeometry(1.35, 0), accentMat);
-        emitter.position.y = 6.8;
-        group.add(base, mast, emitter);
-        group.userData.rotPart = emitter;
-      } else if (type === 'recycler') {
-        const base = new THREE.Mesh(new THREE.BoxGeometry(7.2, 1.6, 7.2), baseMat);
-        base.position.y = 0.8;
-        const grinderMat = new THREE.MeshStandardMaterial({
-          color: 0x00ff9d,
-          emissive: 0x00ff9d,
-          emissiveIntensity: 0.55
+        // YURI / MILITARY CITADEL HQ: Sloped concrete bunker, 4 armored buttresses, radar dish & psychic brain dome
+        const foundation = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.8, 10.5), hazardMat);
+        foundation.position.y = 0.4;
+        const lowerBunker = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 4.8, 2.8, 8), steelMat);
+        lowerBunker.position.y = 2.2;
+        const upperKeep = new THREE.Mesh(new THREE.BoxGeometry(5.2, 2.4, 5.2), armorMat);
+        upperKeep.position.y = 4.4;
+
+        // 4 Angled Armor Buttresses
+        [[-3.4, -3.4], [3.4, -3.4], [-3.4, 3.4], [3.4, 3.4]].forEach(([bx, bz]) => {
+          const fin = new THREE.Mesh(new THREE.BoxGeometry(1.6, 4.8, 1.6), armorMat);
+          fin.position.set(bx, 2.8, bz);
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.9, 1.2, 4), brassMat);
+          cap.position.set(bx, 5.8, bz);
+          group.add(fin, cap);
         });
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.45, 8, 20), grinderMat);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = 2.2;
-        const blade1 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.35, 0.6), subMat);
-        blade1.position.y = 2.2;
-        const blade2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.35, 4.0), subMat);
-        blade2.position.y = 2.2;
-        const rotor = new THREE.Group();
-        rotor.add(blade1, blade2);
-        group.add(base, ring, rotor);
-        group.userData.rotPart = rotor;
+
+        // Rotating Psi-Radar Assembly on Roof
+        const rotorGroup = new THREE.Group();
+        rotorGroup.position.y = 6.2;
+        const psiCore = new THREE.Mesh(new THREE.SphereGeometry(1.65, 16, 12), glowMat);
+        const psiRing = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.22, 8, 24), brassMat);
+        psiRing.rotation.x = Math.PI / 3;
+        const dish = new THREE.Mesh(new THREE.ConeGeometry(1.1, 0.6, 12, 1, true), subGlowMat);
+        dish.position.set(0, 1.9, 0);
+        rotorGroup.add(psiCore, psiRing, dish);
+
+        group.add(foundation, lowerBunker, upperKeep, rotorGroup);
+        group.userData.rotPart = rotorGroup;
+
+      } else if (type === 'power') {
+        // BIO-FUSION REACTOR: Industrial base + twin hyperbolic cooling towers + plasma core tubes
+        const base = new THREE.Mesh(new THREE.BoxGeometry(7.2, 1.0, 6.6), steelMat);
+        base.position.y = 0.5;
+        const genHall = new THREE.Mesh(new THREE.BoxGeometry(6.2, 2.2, 3.2), armorMat);
+        genHall.position.set(0, 1.8, 1.2);
+
+        [-1.8, 1.8].forEach((tx) => {
+          const tower = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.65, 4.6, 14), steelMat);
+          tower.position.set(tx, 3.0, -1.0);
+          const collar = new THREE.Mesh(new THREE.TorusGeometry(1.25, 0.2, 8, 16), brassMat);
+          collar.rotation.x = Math.PI / 2;
+          collar.position.set(tx, 4.2, -1.0);
+          const plasmaPool = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.4, 12), subGlowMat);
+          plasmaPool.position.set(tx, 5.2, -1.0);
+          group.add(tower, collar, plasmaPool);
+        });
+
+        const turbine = new THREE.Mesh(new THREE.OctahedronGeometry(0.95, 0), glowMat);
+        turbine.position.set(0, 3.6, 1.2);
+        group.add(base, genHall, turbine);
+        group.userData.rotPart = turbine;
+
+      } else if (type === 'refinery') {
+        // ORE REFINERY: Unloading ramp + twin ore storage silos + smokestack + smelter furnace
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(8.8, 0.8, 8.2), hazardMat);
+        pad.position.y = 0.4;
+        const mainPlant = new THREE.Mesh(new THREE.BoxGeometry(5.0, 3.4, 5.4), armorMat);
+        mainPlant.position.set(-1.4, 2.1, -0.8);
+
+        // Twin Industrial Silos
+        [-2.8, -0.4].forEach((sx) => {
+          const silo = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 5.4, 14), steelMat);
+          silo.position.set(sx, 3.1, -2.2);
+          const dome = new THREE.Mesh(new THREE.SphereGeometry(1.1, 12, 8), brassMat);
+          dome.position.set(sx, 5.8, -2.2);
+          group.add(silo, dome);
+        });
+
+        // Harvester Unloading Bay & Furnace Glow
+        const bayRoof = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.5, 4.4), steelMat);
+        bayRoof.position.set(2.2, 3.2, 1.2);
+        const furnace = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.6, 2.4), glowMat);
+        furnace.position.set(2.0, 1.4, 1.2);
+        group.add(pad, mainPlant, bayRoof, furnace);
+
+      } else if (type === 'factory') {
+        // WAR FACTORY: Quonset arched roof + armored bay doors + vehicle roll-out ramp + gantry crane
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.8, 8.8), hazardMat);
+        pad.position.y = 0.4;
+        const hall = new THREE.Mesh(new THREE.BoxGeometry(7.6, 3.2, 6.4), steelMat);
+        hall.position.set(0, 2.2, -0.6);
+        const archRoof = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 3.8, 6.4, 12, 1, false, 0, Math.PI), armorMat);
+        archRoof.rotation.z = Math.PI / 2;
+        archRoof.rotation.y = Math.PI / 2;
+        archRoof.position.set(0, 3.8, -0.6);
+
+        // Roll-out Door & Smokestacks
+        const door = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.6, 0.5), glowMat);
+        door.position.set(0, 1.9, 2.65);
+        const stack1 = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.55, 6.2, 10), brassMat);
+        stack1.position.set(-3.4, 3.5, -2.8);
+        const stack2 = stack1.clone();
+        stack2.position.set(-3.4, 3.5, -1.2);
+
+        const radar = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.5, 0.4), subGlowMat);
+        radar.position.set(2.4, 6.2, -1.5);
+        group.add(pad, hall, archRoof, door, stack1, stack2, radar);
+        group.userData.rotPart = radar;
+
+      } else if (type === 'tower') {
+        // YURI PSYCHIC TOWER / TESLA COIL: Fortified bunker base + tall lattice pylon + 3 psychic rings + brain emitter
+        const bunker = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.7, 1.8, 8), armorMat);
+        bunker.position.y = 0.9;
+        const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.85, 6.2, 8), steelMat);
+        spine.position.y = 4.2;
+
+        // 3 Concentric Tesla / Psychic Rings
+        [3.2, 4.6, 6.0].forEach((ry, idx) => {
+          const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(1.45 - idx * 0.22, 0.16, 8, 18),
+            idx % 2 === 0 ? brassMat : subGlowMat
+          );
+          ring.rotation.x = Math.PI / 2;
+          ring.position.y = ry;
+          group.add(ring);
+        });
+
+        const emitter = new THREE.Mesh(new THREE.SphereGeometry(1.05, 14, 12), glowMat);
+        emitter.position.y = 7.4;
+        group.add(bunker, spine, emitter);
+        group.userData.rotPart = emitter;
+
+      } else if (type === 'recycler') {
+        // YURI GRINDER / CYBER RECYCLER: Heavy hazard pit + twin spinning spiked crusher drums + ramp
+        const pit = new THREE.Mesh(new THREE.BoxGeometry(8.2, 1.6, 8.2), hazardMat);
+        pit.position.y = 0.8;
+        const wallL = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.2, 7.6), armorMat);
+        wallL.position.set(-3.2, 2.2, 0);
+        const wallR = wallL.clone();
+        wallR.position.set(3.2, 2.2, 0);
+
+        // Twin Industrial Crusher Drums with Spikes
+        const grinderGroup = new THREE.Group();
+        grinderGroup.position.set(0, 2.2, 0);
+        [-1.15, 1.15].forEach((dz) => {
+          const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 4.8, 12), brassMat);
+          drum.rotation.z = Math.PI / 2;
+          drum.position.z = dz;
+          grinderGroup.add(drum);
+        });
+        const sawBlade = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.1, 0.35), glowMat);
+        grinderGroup.add(sawBlade);
+
+        group.add(pit, wallL, wallR, grinderGroup);
+        group.userData.rotPart = grinderGroup;
       }
 
       group.traverse((child) => {
@@ -1648,93 +1889,170 @@
     }
 
     function buildUnitMesh(type, faction) {
-      const fInfo = FACTIONS[faction];
+      const f = FACTIONS[faction];
       const group = new THREE.Group();
 
+      const treadMat = new THREE.MeshStandardMaterial({
+        color: 0x17191f,
+        roughness: 0.8,
+        metalness: 0.4
+      });
       const hullMat = new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        roughness: 0.45,
+        color: f.hull,
+        roughness: 0.5,
         metalness: 0.65
       });
-      const primaryMat = new THREE.MeshStandardMaterial({
-        color: fInfo.primary,
-        emissive: fInfo.primary,
-        emissiveIntensity: 0.45,
-        roughness: 0.3,
-        metalness: 0.7
+      const armorMat = new THREE.MeshStandardMaterial({
+        color: f.armor,
+        roughness: 0.4,
+        metalness: 0.6
       });
-      const secondaryMat = new THREE.MeshStandardMaterial({
-        color: fInfo.secondary,
-        emissive: fInfo.secondary,
-        emissiveIntensity: 0.35
+      const brassMat = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        roughness: 0.3,
+        metalness: 0.85
+      });
+      const glowMat = new THREE.MeshStandardMaterial({
+        color: f.primary,
+        emissive: f.primary,
+        emissiveIntensity: 0.7
+      });
+      const cyanMat = new THREE.MeshStandardMaterial({
+        color: f.secondary,
+        emissive: f.secondary,
+        emissiveIntensity: 0.65
       });
 
       if (type === 'kamikaze') {
-        const core = new THREE.Mesh(new THREE.ConeGeometry(0.95, 2.2, 4), primaryMat);
-        core.rotation.x = Math.PI / 2;
-        const wing = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.14, 0.7), secondaryMat);
-        const warhead = new THREE.Mesh(
-          new THREE.SphereGeometry(0.45, 8, 8),
-          new THREE.MeshBasicMaterial({ color: 0xffffff })
-        );
-        warhead.position.z = 1.0;
-        group.add(core, wing, warhead);
-      } else if (type === 'prism') {
-        const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.0, 3.4), hullMat);
-        chassis.position.y = 0.6;
-        const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.8, 3.6), secondaryMat);
-        trackL.position.set(-1.35, 0.5, 0);
-        const trackR = trackL.clone();
-        trackR.position.x = 1.35;
-        const turret = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.15, 0.8, 8), primaryMat);
-        turret.position.y = 1.4;
-        const crystal = new THREE.Mesh(
-          new THREE.OctahedronGeometry(0.75, 0),
-          new THREE.MeshBasicMaterial({ color: 0x00ffff })
-        );
-        crystal.position.set(0, 2.15, 0.3);
-        group.add(chassis, trackL, trackR, turret, crystal);
-        group.userData.rotPart = crystal;
-      } else if (type === 'hackrover') {
-        const body = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.0, 3.0), hullMat);
-        body.position.y = 0.7;
-        const brainMat = new THREE.MeshStandardMaterial({
-          color: 0xb829ff,
-          emissive: 0xb829ff,
-          emissiveIntensity: 0.75
+        // MILITARY QUAD-ROTOR LOITERING MUNITION DRONE
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 2.2), armorMat);
+        const warhead = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.1, 8), glowMat);
+        warhead.rotation.x = Math.PI / 2;
+        warhead.position.z = 1.4;
+        const arm1 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.15, 0.25), hullMat);
+        arm1.rotation.y = Math.PI / 4;
+        const arm2 = arm1.clone();
+        arm2.rotation.y = -Math.PI / 4;
+
+        // 4 Rotor Rings
+        [[-0.95, -0.95], [0.95, -0.95], [-0.95, 0.95], [0.95, 0.95]].forEach(([rx, rz]) => {
+          const rotor = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.07, 6, 12), cyanMat);
+          rotor.rotation.x = Math.PI / 2;
+          rotor.position.set(rx, 0.2, rz);
+          group.add(rotor);
         });
-        const dish = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.22, 8, 18), brainMat);
-        dish.rotation.x = Math.PI / 2;
-        dish.position.y = 1.9;
-        const orb = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 12), primaryMat);
-        orb.position.y = 1.9;
-        group.add(body, dish, orb);
-        group.userData.rotPart = dish;
+        group.add(body, warhead, arm1, arm2);
+
+      } else if (type === 'prism') {
+        // PRISM LASER TANK: Heavy armored tank treads + sloped hull + turret + twin laser barrels + prism crystal array
+        const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 4.0), treadMat);
+        trackL.position.set(-1.45, 0.5, 0);
+        const trackR = trackL.clone();
+        trackR.position.x = 1.45;
+        const hull = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.95, 3.6), armorMat);
+        hull.position.y = 0.75;
+        const glacis = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 1.2), hullMat);
+        glacis.position.set(0, 0.9, 1.5);
+        glacis.rotation.x = 0.3;
+
+        // Turret & Prism Emitter Cannon
+        const turret = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.75, 2.0), hullMat);
+        turret.position.set(0, 1.55, -0.2);
+        const barrelL = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 2.3, 8), brassMat);
+        barrelL.rotation.x = Math.PI / 2;
+        barrelL.position.set(-0.38, 1.55, 1.4);
+        const barrelR = barrelL.clone();
+        barrelR.position.x = 0.38;
+        const prismCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.68, 0), cyanMat);
+        prismCore.position.set(0, 2.25, -0.2);
+
+        group.add(trackL, trackR, hull, glacis, turret, barrelL, barrelR, prismCore);
+        group.userData.rotPart = prismCore;
+
+      } else if (type === 'hackrover') {
+        // YURI MASTERMIND / HACK-ROVER: Heavy 6-wheel/tracked armored hull + giant glowing Psi-Brain dome + concentric wave dishes
+        const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 3.8), treadMat);
+        trackL.position.set(-1.5, 0.5, 0);
+        const trackR = trackL.clone();
+        trackR.position.x = 1.5;
+        const hull = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.1, 3.4), armorMat);
+        hull.position.y = 0.8;
+        const collar = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.45, 0.5, 12), brassMat);
+        collar.position.y = 1.55;
+
+        // Giant Psychic Brain Case
+        const brainMat = new THREE.MeshStandardMaterial({
+          color: 0xd500f9,
+          emissive: 0xaa00ff,
+          emissiveIntensity: 0.8,
+          roughness: 0.2
+        });
+        const brain = new THREE.Mesh(new THREE.SphereGeometry(1.15, 16, 12), brainMat);
+        brain.scale.set(1.0, 0.9, 1.25);
+        brain.position.y = 2.25;
+
+        // Rotating Psi-Wave Emitter Rings
+        const psiAssembly = new THREE.Group();
+        psiAssembly.position.y = 2.25;
+        const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.12, 8, 20), cyanMat);
+        ring1.rotation.x = Math.PI / 2.4;
+        const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.1, 8, 20), brassMat);
+        ring2.rotation.y = Math.PI / 3;
+        psiAssembly.add(ring1, ring2);
+
+        group.add(trackL, trackR, hull, collar, brain, psiAssembly);
+        group.userData.rotPart = psiAssembly;
+
       } else if (type === 'mothership') {
-        const hull = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 6.8, 14), primaryMat);
+        // KIROV AIRSHIP / SKY MOTHERSHIP: Massive armored zeppelin dirigible + tail fins + underslung bomb bay gondola + propellers
+        const hull = new THREE.Mesh(new THREE.CylinderGeometry(2.35, 2.35, 6.6, 16), armorMat);
         hull.rotation.x = Math.PI / 2;
-        const nose = new THREE.Mesh(new THREE.SphereGeometry(2.2, 14, 12), secondaryMat);
-        nose.position.z = 3.2;
-        const tail = nose.clone();
-        tail.position.z = -3.2;
-        const gondola = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 4.2), hullMat);
-        gondola.position.y = -2.1;
-        const finV = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.2, 2.2), secondaryMat);
-        finV.position.set(0, 1.5, -2.8);
-        group.add(hull, nose, tail, gondola, finV);
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(2.35, 16, 12), glowMat);
+        nose.position.z = 3.3;
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(2.35, 3.2, 16), armorMat);
+        tail.rotation.x = -Math.PI / 2;
+        tail.position.z = -4.9;
+
+        // Golden Rib Bands around Dirigible
+        [-1.8, 0, 1.8].forEach((rz) => {
+          const band = new THREE.Mesh(new THREE.TorusGeometry(2.38, 0.14, 8, 24), brassMat);
+          band.position.z = rz;
+          group.add(band);
+        });
+
+        // 4 Tail Stabilizer Fins
+        const finV = new THREE.Mesh(new THREE.BoxGeometry(0.28, 3.8, 2.6), glowMat);
+        finV.position.set(0, 0, -4.6);
+        const finH = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.28, 2.6), glowMat);
+        finH.position.set(0, 0, -4.6);
+
+        // Heavy Underslung Bomb Gondola
+        const gondola = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.35, 4.6), hullMat);
+        gondola.position.set(0, -2.3, 0.2);
+
+        group.add(hull, nose, tail, finV, finH, gondola);
+
       } else if (type === 'harvester') {
-        const body = new THREE.Mesh(new THREE.BoxGeometry(2.7, 1.35, 3.5), hullMat);
-        body.position.y = 0.8;
-        const bin = new THREE.Mesh(
-          new THREE.BoxGeometry(2.3, 1.1, 2.0),
-          new THREE.MeshStandardMaterial({ color: 0x00ff9d, emissive: 0x00ff9d, emissiveIntensity: 0.35 })
+        // ARMORED WAR HARVESTER: Heavy treads + ore dump hopper + front rotary mining drill
+        const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 3.8), treadMat);
+        trackL.position.set(-1.45, 0.5, 0);
+        const trackR = trackL.clone();
+        trackR.position.x = 1.45;
+        const cab = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.3, 1.6), armorMat);
+        cab.position.set(0, 1.0, 0.9);
+        const hopper = new THREE.Mesh(
+          new THREE.BoxGeometry(2.5, 1.4, 2.1),
+          new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.4, metalness: 0.7 })
         );
-        bin.position.set(0, 1.6, -0.5);
-        const scoop = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 2.8, 8), primaryMat);
-        scoop.rotation.z = Math.PI / 2;
-        scoop.position.set(0, 0.65, 2.0);
-        group.add(body, bin, scoop);
-        group.userData.rotPart = scoop;
+        hopper.position.set(0, 1.15, -0.9);
+
+        // Front Rotary Mining Drill
+        const drill = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.58, 2.9, 10), cyanMat);
+        drill.rotation.z = Math.PI / 2;
+        drill.position.set(0, 0.6, 2.2);
+
+        group.add(trackL, trackR, cab, hopper, drill);
+        group.userData.rotPart = drill;
       }
 
       group.traverse((child) => {
@@ -1749,25 +2067,46 @@
 
     // === 6. ENTITY SPAWNING & MANAGEMENT ===
     function spawnOreCluster(cx, cz, count = 8) {
+      // Glowing crater pad under the ore field
+      const craterGeo = new THREE.CircleGeometry(10.5, 24);
+      craterGeo.rotateX(-Math.PI / 2);
+      const craterMat = new THREE.MeshBasicMaterial({
+        color: 0x3b2d07,
+        transparent: true,
+        opacity: 0.55
+      });
+      const crater = new THREE.Mesh(craterGeo, craterMat);
+      crater.position.set(cx, 0.04, cz);
+      scene.add(crater);
+
       for (let i = 0; i < count; i++) {
-        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
-        const dist = 2.5 + Math.random() * 6.5;
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+        const dist = 2.0 + Math.random() * 6.8;
         const x = cx + Math.cos(angle) * dist;
         const z = cz + Math.sin(angle) * dist;
 
         const crystalGroup = new THREE.Group();
-        const mat = new THREE.MeshStandardMaterial({
-          color: 0x00ff9d,
-          emissive: 0x00d68f,
-          emissiveIntensity: 0.7,
-          roughness: 0.2
+        const rockMat = new THREE.MeshStandardMaterial({ color: 0x3a3228, roughness: 0.9 });
+        const goldMat = new THREE.MeshStandardMaterial({
+          color: 0xffc400,
+          emissive: 0xff8800,
+          emissiveIntensity: 0.55,
+          roughness: 0.25,
+          metalness: 0.8
         });
-        const mainCrystal = new THREE.Mesh(new THREE.ConeGeometry(0.85, 2.7, 5), mat);
-        mainCrystal.position.y = 1.35;
-        const subCrystal = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.8, 5), mat);
-        subCrystal.position.set(0.6, 0.9, 0.3);
-        subCrystal.rotation.z = -0.35;
-        crystalGroup.add(mainCrystal, subCrystal);
+
+        const rockBase = new THREE.Mesh(new THREE.DodecahedronGeometry(1.05, 0), rockMat);
+        rockBase.scale.y = 0.55;
+        rockBase.position.y = 0.4;
+        const shard1 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8, 0), goldMat);
+        shard1.scale.set(0.7, 1.9, 0.7);
+        shard1.position.set(0, 1.3, 0);
+        const shard2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.6, 0), goldMat);
+        shard2.scale.set(0.6, 1.5, 0.6);
+        shard2.position.set(0.55, 0.95, 0.3);
+        shard2.rotation.z = -0.4;
+
+        crystalGroup.add(rockBase, shard1, shard2);
         crystalGroup.position.set(x, 0, z);
         scene.add(crystalGroup);
 
@@ -1793,20 +2132,20 @@
       root.add(model);
 
       // Selection Ring
-      const selGeo = new THREE.RingGeometry(def.radius * 0.92, def.radius * 1.06, 32);
+      const selGeo = new THREE.RingGeometry(def.radius * 0.95, def.radius * 1.08, 32);
       selGeo.rotateX(-Math.PI / 2);
       const selMat = new THREE.MeshBasicMaterial({
-        color: FACTIONS[faction].primary,
+        color: 0x00ff66,
         side: THREE.DoubleSide
       });
       const selRing = new THREE.Mesh(selGeo, selMat);
-      selRing.position.y = 0.12;
+      selRing.position.y = 0.14;
       selRing.visible = false;
       root.add(selRing);
 
       // Health Bar
-      const hpBar = createHealthBarMesh(6.2, 0.55);
-      hpBar.position.set(0, 8.2, 0);
+      const hpBar = createHealthBarMesh(6.4, 0.55);
+      hpBar.position.set(0, 8.6, 0);
       root.add(hpBar);
 
       scene.add(root);
@@ -1836,9 +2175,8 @@
       state.buildings.push(building);
       recalcPower();
 
-      // If Refinery is built, spawn a free Harvester right next to it
       if (type === 'refinery') {
-        spawnUnit('harvester', faction, x + 5.5, z + 4.5);
+        spawnUnit('harvester', faction, x + 5.8, z + 4.8);
       }
 
       return building;
@@ -1855,29 +2193,29 @@
       const model = buildUnitMesh(type, faction);
       root.add(model);
 
-      // Selection Ring on ground
-      const selGeo = new THREE.RingGeometry(1.9, 2.35, 24);
+      // Tactical Selection Bracket Ring
+      const selGeo = new THREE.RingGeometry(2.1, 2.55, 24);
       selGeo.rotateX(-Math.PI / 2);
       const selMat = new THREE.MeshBasicMaterial({
-        color: 0x00ff9d,
+        color: 0x00ff66,
         side: THREE.DoubleSide
       });
       const selRing = new THREE.Mesh(selGeo, selMat);
-      selRing.position.y = def.flying ? -yPos + 0.15 : 0.15;
+      selRing.position.y = def.flying ? -yPos + 0.16 : 0.16;
       selRing.visible = false;
       root.add(selRing);
 
-      // Hacked Indicator Crown (when stolen by A.U. Hack-Rover)
-      const crownGeo = new THREE.OctahedronGeometry(0.55, 0);
-      const crownMat = new THREE.MeshBasicMaterial({ color: 0xb829ff, wireframe: true });
+      // Yuri Mind-Control Psi-Beacon above stolen units
+      const crownGeo = new THREE.OctahedronGeometry(0.65, 0);
+      const crownMat = new THREE.MeshBasicMaterial({ color: 0xdf00ff, wireframe: true });
       const crownMesh = new THREE.Mesh(crownGeo, crownMat);
-      crownMesh.position.y = 3.8;
+      crownMesh.position.y = 4.0;
       crownMesh.visible = false;
       root.add(crownMesh);
 
       // Health Bar
-      const hpBar = createHealthBarMesh(3.6, 0.42);
-      hpBar.position.set(0, 3.1, 0);
+      const hpBar = createHealthBarMesh(3.8, 0.44);
+      hpBar.position.set(0, 3.3, 0);
       root.add(hpBar);
 
       scene.add(root);
@@ -1902,7 +2240,6 @@
         flyHeight: def.flyHeight || 0,
         recycleValue: def.recycleValue || Math.round(def.cost * 0.75),
         fireTimer: 0,
-        hackProgress: 0,
         targetPos: null,
         targetEntity: null,
         recycleTarget: null,
@@ -1926,21 +2263,33 @@
       unit.targetEntity = null;
       unit.targetPos = null;
 
-      // Rebuild mesh with new faction colors
       unit.mesh.remove(unit.model);
       unit.model = buildUnitMesh(unit.type, newFaction);
       unit.mesh.add(unit.model);
       unit.crownMesh.visible = true;
 
-      spawnParticles(unit.x, unit.y + 1.5, unit.z, 0xb829ff, 18);
+      spawnParticles(unit.x, unit.y + 1.6, unit.z, 0xdf00ff, 20);
       sfx.playHackWave();
-      showEvaAlert(`🧠 แฮ็กยึดสำเร็จ! ${unit.name} กลายเป็นยูนิตฝ่าย A.U. แล้ว! (สั่งรบต่อหรือส่งเข้า Cyber Recycler ได้เลย)`, 'hack');
+      showEvaAlert(`🧠 PSI-OVERRIDE! แฮ็กยึด [${unit.name}] สำเร็จ! สั่งรบต่อหรือส่งเข้าโรงบด Cyber Recycler เพื่อแลกเงินสดได้เลย!`, 'hack');
       updateInspectorUI();
     }
 
-    // === 7. VISUAL FX (LASERS, HACK WAVES, EXPLOSIONS) ===
-    function spawnBeam(startVec, endVec, colorHex, duration = 0.22) {
-      const points = [startVec.clone(), endVec.clone()];
+    // === 7. VISUAL FX (LASERS, YURI PSI-WAVES, EXPLOSIONS) ===
+    function spawnBeam(startVec, endVec, colorHex, duration = 0.24, isPsiWave = false) {
+      const points = [];
+      if (isPsiWave) {
+        // Wavy Psychic Mind-Control Beam
+        const segs = 16;
+        for (let i = 0; i <= segs; i++) {
+          const t = i / segs;
+          const p = new THREE.Vector3().lerpVectors(startVec, endVec, t);
+          p.y += Math.sin(t * Math.PI * 6) * 0.65;
+          points.push(p);
+        }
+      } else {
+        points.push(startVec.clone(), endVec.clone());
+      }
+
       const geo = new THREE.BufferGeometry().setFromPoints(points);
       const mat = new THREE.LineBasicMaterial({
         color: colorHex,
@@ -1956,14 +2305,14 @@
     function spawnParticles(x, y, z, colorHex, count = 14) {
       for (let i = 0; i < count; i++) {
         const mesh = new THREE.Mesh(
-          new THREE.BoxGeometry(0.55, 0.55, 0.55),
+          new THREE.BoxGeometry(0.6, 0.6, 0.6),
           new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 1 })
         );
         mesh.position.set(x, y, z);
         const vel = new THREE.Vector3(
-          (Math.random() - 0.5) * 18,
-          Math.random() * 14 + 3,
-          (Math.random() - 0.5) * 18
+          (Math.random() - 0.5) * 19,
+          Math.random() * 15 + 3,
+          (Math.random() - 0.5) * 19
         );
         scene.add(mesh);
         state.particles.push({ mesh, vel, timer: 0.55, maxTimer: 0.55 });
@@ -1985,7 +2334,7 @@
       const wasLow = state.lowPower;
       state.lowPower = prod < cons;
       if (state.lowPower && !wasLow) {
-        showEvaAlert('⚠️ พลังงานไฟฟ้าไม่พอ (LOW POWER)! ป้อม Signal Override Tower ทำงานช้าลง โปรดสร้าง Fusion Power Plant!', 'warn');
+        showEvaAlert('⚠️ LOW POWER! พลังงานไฟฟ้าฐานทัพไม่พอ ป้อม Signal Override Tower ยิงช้าลง กรุณาสร้าง Fusion Power Plant!', 'warn');
         sfx.playSiren();
       }
       updateTopHud();
@@ -2001,6 +2350,7 @@
     const hudCredits = document.getElementById('hud-credits');
     const hudPower = document.getElementById('hud-power');
     const powerPill = document.getElementById('power-pill');
+    const powerFillStrip = document.getElementById('power-fill-strip');
     const evaAlertEl = document.getElementById('eva-alert');
     let evaTimeout = null;
 
@@ -2018,6 +2368,9 @@
     function updateTopHud() {
       hudCredits.textContent = `$${state.credits.toLocaleString()}`;
       hudPower.textContent = `${state.powerProduced} / ${state.powerConsumed}`;
+      const ratio = state.powerProduced > 0 ? Math.min(100, (state.powerConsumed / state.powerProduced) * 100) : 100;
+      powerFillStrip.style.width = `${ratio}%`;
+
       if (state.lowPower) {
         hudPower.className = 'res-val power-low';
         powerPill.classList.add('low-power');
@@ -2027,7 +2380,6 @@
       }
     }
 
-    // Render Sidebar Build Cards
     const listBuildingsEl = document.getElementById('list-buildings');
     const listUnitsEl = document.getElementById('list-units');
 
@@ -2037,17 +2389,17 @@
         const card = document.createElement('div');
         card.className = 'cameo-card';
         card.dataset.btype = b.type;
-        const pwrText = b.power >= 0 ? `+${b.power} ⚡` : `${b.power} ⚡`;
+        const pwrText = b.power >= 0 ? `+${b.power}⚡` : `${b.power}⚡`;
         const pwrClass = b.power >= 0 ? 'power-plus' : 'power-minus';
         card.innerHTML = `
-          <div class="cameo-icon">${b.icon}</div>
-          <div class="cameo-body">
-            <div class="cameo-top">
-              <span class="cameo-title">${b.name}</span>
-              <span class="cameo-cost">$${b.cost}</span>
-            </div>
+          <div class="cameo-art">
+            ${CAMEO_SVGS[b.type]}
+            <span class="cameo-cost-badge">$${b.cost}</span>
+            <span class="cameo-power-badge ${pwrClass}">${pwrText}</span>
+          </div>
+          <div>
+            <div class="cameo-title">${b.name}</div>
             <div class="cameo-desc">${b.desc}</div>
-            <span class="cameo-power ${pwrClass}">${pwrText}</span>
           </div>
         `;
         card.addEventListener('click', () => startBuildingPlacement(b.type));
@@ -2060,14 +2412,14 @@
         card.className = 'cameo-card';
         card.dataset.utype = u.type;
         card.innerHTML = `
-          <div class="cameo-icon">${u.icon}</div>
-          <div class="cameo-body">
-            <div class="cameo-top">
-              <span class="cameo-title">${u.name}</span>
-              <span class="cameo-cost">$${u.cost}</span>
-            </div>
+          <div class="cameo-art">
+            ${CAMEO_SVGS[u.type]}
+            <span class="cameo-cost-badge">$${u.cost}</span>
+            <span class="cameo-power-badge power-plus">♻️$${u.recycleValue}</span>
+          </div>
+          <div>
+            <div class="cameo-title">${u.name}</div>
             <div class="cameo-desc">${u.desc}</div>
-            <span class="cameo-power power-plus">♻️ รีไซเคิลได้ $${u.recycleValue}</span>
           </div>
         `;
         card.addEventListener('click', () => produceUnitFromFactory(u.type));
@@ -2094,7 +2446,6 @@
       });
     }
 
-    // Tab switching
     const tabBuildingsBtn = document.getElementById('tab-buildings');
     const tabUnitsBtn = document.getElementById('tab-units');
 
@@ -2102,7 +2453,7 @@
       sfx.playUiClick();
       tabBuildingsBtn.classList.add('active');
       tabUnitsBtn.classList.remove('active');
-      listBuildingsEl.style.display = 'flex';
+      listBuildingsEl.style.display = 'grid';
       listUnitsEl.style.display = 'none';
     });
 
@@ -2110,7 +2461,7 @@
       sfx.playUiClick();
       tabUnitsBtn.classList.add('active');
       tabBuildingsBtn.classList.remove('active');
-      listUnitsEl.style.display = 'flex';
+      listUnitsEl.style.display = 'grid';
       listBuildingsEl.style.display = 'none';
     });
 
@@ -2123,12 +2474,12 @@
       const def = BUILDING_CATALOG.find((b) => b.type === btype);
       if (!def) return;
       if (state.credits < def.cost) {
-        showEvaAlert(`⚠️ เงิน Credits ไม่พอสำหรับ ${def.name} (ต้องการ $${def.cost})`, 'warn');
+        showEvaAlert(`⚠️ เงินทุนสงครามไม่พอสำหรับ ${def.name} (ต้องการ $${def.cost})`, 'warn');
         return;
       }
       state.placingBuildingType = btype;
       ghostGroup.visible = true;
-      placementText.textContent = `🏗️ กำลังวาง [${def.name}] — คลิก/แตะบนพื้นสนามรบเพื่อก่อสร้าง`;
+      placementText.textContent = `🏗️ กำลังวางโครงสร้าง [${def.name}] — คลิกบนพื้นสนามรบใกล้ฐานทัพ`;
       placementBanner.classList.add('active');
       refreshBuildButtonsState();
     }
@@ -2153,35 +2504,32 @@
         return true;
       }
 
-      // Check collision with existing buildings
       for (const b of state.buildings) {
         const dist = Math.hypot(b.x - worldX, b.z - worldZ);
         if (dist < b.radius + def.radius + 1.5) {
-          showEvaAlert('⚠️ พื้นที่นี้แคบเกินไป กรุณาวางห่างจากอาคารอื่นเล็กน้อย', 'warn');
+          showEvaAlert('⚠️ พิกัดนี้ติดสิ่งปลูกสร้างอื่น กรุณาขยับออกเล็กน้อย', 'warn');
           return true;
         }
       }
 
-      // Check proximity to friendly building (allow anywhere if no buildings exist)
       const myBuildings = state.buildings.filter((b) => b.faction === 'AU');
       if (myBuildings.length > 0) {
-        const nearFriendly = myBuildings.some((b) => Math.hypot(b.x - worldX, b.z - worldZ) < 48);
+        const nearFriendly = myBuildings.some((b) => Math.hypot(b.x - worldX, b.z - worldZ) < 52);
         if (!nearFriendly) {
-          showEvaAlert('⚠️ กรุณาก่อสร้างในรัศมีโครงข่ายฐานทัพ A.U. ของคุณ!', 'warn');
+          showEvaAlert('⚠️ กรุณาวางอาคารภายในรัศมีฐานทัพ A.U. ของคุณ!', 'warn');
           return true;
         }
       }
 
       addCredits(-def.cost);
       spawnBuilding(def.type, 'AU', worldX, worldZ);
-      spawnParticles(worldX, 2, worldZ, 0x00f0ff, 16);
+      spawnParticles(worldX, 2, worldZ, 0x00ff88, 16);
       sfx.playUiClick();
-      showEvaAlert(`✅ ก่อสร้าง ${def.name} เสร็จสมบูรณ์!`);
+      showEvaAlert(`✅ ก่อสร้าง [${def.name}] เสร็จสมบูรณ์!`);
       cancelBuildingPlacement();
       return true;
     }
 
-    // Produce Unit from Cyber & Drone Factory
     function produceUnitFromFactory(utype) {
       sfx.playUiClick();
       const def = UNIT_CATALOG.find((u) => u.type === utype);
@@ -2189,7 +2537,7 @@
 
       const factories = state.buildings.filter((b) => b.faction === 'AU' && b.type === 'factory' && b.hp > 0);
       if (factories.length === 0) {
-        showEvaAlert('⚠️ ต้องสร้างโรงงาน Cyber & Drone Factory ก่อนจึงจะผลิตยูนิตได้!', 'warn');
+        showEvaAlert('⚠️ ต้องมีโรงงาน Cyber & Drone Factory ก่อนจึงจะผลิตยุทโธปกรณ์ได้!', 'warn');
         return;
       }
 
@@ -2204,8 +2552,8 @@
       const spawnZ = fac.z + (Math.random() - 0.5) * 6 + 6;
       const u = spawnUnit(utype, 'AU', spawnX, spawnZ);
       u.targetPos = { x: spawnX + 5, z: spawnZ - 4 };
-      spawnParticles(spawnX, u.y + 1, spawnZ, 0x00f0ff, 12);
-      showEvaAlert(`🤖 ผลิต ${def.name} พร้อมเข้าประจำการ!`);
+      spawnParticles(spawnX, u.y + 1, spawnZ, 0xb829ff, 12);
+      showEvaAlert(`⚔️ ยูนิต [${def.name}] เคลื่อนพลออกจากโรงงานแล้ว!`);
     }
 
     // === 10. SELECTION, BOX SELECT, TOUCH MODES & RECYCLER COMMANDS ===
@@ -2218,19 +2566,24 @@
       pointerNDC.y = -(clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(pointerNDC, camera);
       const hits = raycaster.intersectObject(groundMesh);
-      if (hits.length > 0) {
-        return hits[0].point;
-      }
-      return null;
+      return hits.length > 0 ? hits[0].point : null;
+    }
+
+    function worldToScreen(wx, wy, wz) {
+      const v = new THREE.Vector3(wx, wy, wz);
+      v.project(camera);
+      return {
+        x: (v.x * 0.5 + 0.5) * window.innerWidth,
+        y: (-(v.y * 0.5) + 0.5) * window.innerHeight
+      };
     }
 
     function pickEntityAtScreen(clientX, clientY) {
       const pt = getGroundIntersection(clientX, clientY);
       if (!pt) return null;
 
-      // Check units first (including flying units projected to screen distance)
       let bestUnit = null;
-      let bestDistPx = 38;
+      let bestDistPx = 40;
       for (const u of state.units) {
         if (u.hp <= 0) continue;
         const screenPos = worldToScreen(u.x, u.y + 1, u.z);
@@ -2242,23 +2595,13 @@
       }
       if (bestUnit) return bestUnit;
 
-      // Check buildings
       for (const b of state.buildings) {
         if (b.hp <= 0) continue;
-        if (Math.hypot(b.x - pt.x, b.z - pt.z) <= b.radius + 1.2) {
+        if (Math.hypot(b.x - pt.x, b.z - pt.z) <= b.radius + 1.4) {
           return b;
         }
       }
       return null;
-    }
-
-    function worldToScreen(wx, wy, wz) {
-      const v = new THREE.Vector3(wx, wy, wz);
-      v.project(camera);
-      return {
-        x: (v.x * 0.5 + 0.5) * window.innerWidth,
-        y: (-(v.y * 0.5) + 0.5) * window.innerHeight
-      };
     }
 
     function clearSelection() {
@@ -2302,9 +2645,7 @@
           u.selRing.visible = true;
         }
       }
-      if (state.selectedUnits.length > 0) {
-        sfx.playUiClick();
-      }
+      if (state.selectedUnits.length > 0) sfx.playUiClick();
       updateInspectorUI();
     }
 
@@ -2315,29 +2656,28 @@
 
       if (state.selectedUnits.length === 1) {
         const u = state.selectedUnits[0];
-        titleEl.textContent = u.wasHacked ? `🧠 ${u.name} (Hacked)` : u.name;
+        titleEl.textContent = u.wasHacked ? `🧠 ${u.name} (CAPTURED)` : u.name;
         countEl.textContent = `HP ${Math.ceil(u.hp)}/${u.maxHp}`;
-        descEl.textContent = `คลิกขวาที่ศัตรูเพื่อโจมตี/แฮ็ก หรือส่งเข้าโรงบด Cyber Recycler เพื่อรับเงินสด $${u.recycleValue}`;
+        descEl.textContent = `คลิกขวาที่ศัตรูเพื่อโจมตี/แฮ็กยึด หรือส่งเข้าโรงบด Cyber Recycler รับเงินสด $${u.recycleValue}`;
       } else if (state.selectedUnits.length > 1) {
         const totalRecycle = state.selectedUnits.reduce((acc, u) => acc + u.recycleValue, 0);
-        titleEl.textContent = 'A.U. Strike Group';
+        titleEl.textContent = 'A.U. ARMORED DIVISION';
         countEl.textContent = `${state.selectedUnits.length} UNITS`;
-        descEl.textContent = `กองกำลังพร้อมรบ! (มูลค่ารีไซเคิลรวม $${totalRecycle})`;
+        descEl.textContent = `กองพันพร้อมรบ! (มูลค่าบดรีไซเคิลรวม $${totalRecycle})`;
       } else if (state.selectedBuilding) {
         const b = state.selectedBuilding;
         titleEl.textContent = b.name;
         countEl.textContent = `HP ${Math.ceil(b.hp)}/${b.maxHp}`;
         descEl.textContent = b.type === 'recycler'
-          ? '♻️ โรงบดรีไซเคิล: สั่งยูนิตเดินเข้าตึกนี้เพื่อย่อยสลายเป็นเงินสด Credits ทันที!'
-          : `โครงสร้างฝ่าย ${FACTIONS[b.faction].name}`;
+          ? '♻️ โรงบดเหล็ก Grinder: สั่งยูนิตเดินเข้าตึกนี้เพื่อบดย่อยเป็นเงินสด Credits ทันที!'
+          : `โครงสร้างทางทหารฝ่าย ${FACTIONS[b.faction].name}`;
       } else {
-        titleEl.textContent = 'A.U. Tactical Cursor';
+        titleEl.textContent = 'A.U. TACTICAL CURSOR';
         countEl.textContent = '0 SELECTED';
-        descEl.textContent = 'ลากเมาส์คลุมเลือกยูนิต หรือใช้ปุ่มโหมดสั่งการด้านล่างสำหรับจอสัมผัส';
+        descEl.textContent = 'ลากเมาส์ตีกรอบเลือกกองทัพ คลิกขวาเพื่อสั่งโจมตี/แฮ็กยึดรถถังศัตรู';
       }
     }
 
-    // Issue tactical order (Move, Attack/Hack, or Enter Cyber Recycler)
     function issueOrderAtScreen(clientX, clientY, forceRecycle = false) {
       if (state.selectedUnits.length === 0) {
         showEvaAlert('ℹ️ กรุณาเลือกยูนิตฝ่าย A.U. ก่อนสั่งการ!');
@@ -2347,14 +2687,13 @@
       const targetEnt = pickEntityAtScreen(clientX, clientY);
       const groundPt = getGroundIntersection(clientX, clientY);
 
-      // 1. Check if ordering into Cyber Recycler
       if (forceRecycle || (targetEnt && targetEnt.isBuilding && targetEnt.faction === 'AU' && targetEnt.type === 'recycler')) {
         const recycler = (targetEnt && targetEnt.type === 'recycler')
           ? targetEnt
           : state.buildings.find((b) => b.faction === 'AU' && b.type === 'recycler' && b.hp > 0);
 
         if (!recycler) {
-          showEvaAlert('⚠️ คุณยังไม่ได้สร้างตึก Cyber Recycler! กรุณาสร้างจากเมนูด้านขวาก่อน', 'warn');
+          showEvaAlert('⚠️ คุณยังไม่มีตึก Cyber Recycler! กรุณาก่อสร้างจากเมนูด้านขวาก่อน', 'warn');
           return;
         }
 
@@ -2363,29 +2702,27 @@
           u.targetEntity = null;
           u.targetPos = { x: recycler.x, z: recycler.z };
         });
-        spawnParticles(recycler.x, 2.5, recycler.z, 0x00ff9d, 10);
+        spawnParticles(recycler.x, 2.5, recycler.z, 0x00ff88, 10);
         sfx.playUiClick();
-        showEvaAlert(`♻️ สั่งยูนิต ${state.selectedUnits.length} ลำมุ่งหน้าเข้าโรงบด Cyber Recycler เพื่อแลกเงินสด!`);
+        showEvaAlert(`♻️ สั่งยูนิต ${state.selectedUnits.length} คันมุ่งหน้าเข้าโรงบด Cyber Recycler เพื่อแลกเงินสด!`);
         return;
       }
 
-      // 2. Check if ordering Attack or Hack on Enemy Entity
       if (targetEnt && targetEnt.faction !== 'AU') {
         state.selectedUnits.forEach((u) => {
           u.targetEntity = targetEnt;
           u.recycleTarget = null;
           u.targetPos = null;
         });
-        spawnParticles(targetEnt.x, 2, targetEnt.z, 0xff2a4b, 8);
+        spawnParticles(targetEnt.x, 2, targetEnt.z, 0xff2a2a, 8);
         sfx.playUiClick();
         return;
       }
 
-      // 3. Standard Ground Move Formation
       if (groundPt) {
         const count = state.selectedUnits.length;
         const cols = Math.ceil(Math.sqrt(count));
-        const spacing = 4.2;
+        const spacing = 4.5;
         state.selectedUnits.forEach((u, idx) => {
           const r = Math.floor(idx / cols);
           const c = idx % cols;
@@ -2396,12 +2733,11 @@
           u.recycleTarget = null;
           if (u.type === 'harvester') u.harvestState = 'manual';
         });
-        spawnParticles(groundPt.x, 0.5, groundPt.z, 0x00f0ff, 6);
+        spawnParticles(groundPt.x, 0.5, groundPt.z, 0x00ff88, 6);
         sfx.playUiClick();
       }
     }
 
-    // Quick Action Buttons in Inspector
     document.getElementById('btn-select-all').addEventListener('click', () => {
       clearSelection();
       for (const u of state.units) {
@@ -2412,14 +2748,13 @@
       }
       sfx.playUiClick();
       updateInspectorUI();
-      showEvaAlert(`⚔️ เลือกกองกำลังรบ A.U. ทั้งหมด (${state.selectedUnits.length} ยูนิต)`);
+      showEvaAlert(`⚔️ เลือกกองทัพรบ A.U. ทั้งหมด (${state.selectedUnits.length} ยูนิต)`);
     });
 
     document.getElementById('btn-send-recycle').addEventListener('click', () => {
       issueOrderAtScreen(0, 0, true);
     });
 
-    // Touch & Command Mode Switching
     document.querySelectorAll('.mode-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         sfx.playUiClick();
@@ -2429,7 +2764,7 @@
       });
     });
 
-    // === 11. POINTER (MOUSE + TOUCH) & KEYBOARD INPUT HANDLERS ===
+    // === 11. POINTER & KEYBOARD INPUT HANDLERS ===
     let isPointerDown = false;
     let pointerButton = 0;
     let startX = 0;
@@ -2450,7 +2785,6 @@
       lastPanX = e.clientX;
       lastPanY = e.clientY;
 
-      // If placing a building
       if (state.placingBuildingType) {
         if (e.button === 2) {
           cancelBuildingPlacement();
@@ -2458,27 +2792,22 @@
           return;
         }
         const pt = getGroundIntersection(e.clientX, e.clientY);
-        if (pt) {
-          tryConfirmBuildingPlacement(pt.x, pt.z);
-        }
+        if (pt) tryConfirmBuildingPlacement(pt.x, pt.z);
         isPointerDown = false;
         return;
       }
 
-      // Middle click or Pan mode
       if (e.button === 1 || state.commandMode === 'pan') {
         isPanningCam = true;
         return;
       }
 
-      // Right click on PC issues immediate command
       if (e.button === 2) {
         issueOrderAtScreen(e.clientX, e.clientY, false);
         isPointerDown = false;
         return;
       }
 
-      // Left click or Touch in Move/Attack or Recycle mode
       if (state.commandMode === 'move_attack') {
         issueOrderAtScreen(e.clientX, e.clientY, false);
         isPointerDown = false;
@@ -2493,12 +2822,9 @@
     });
 
     window.addEventListener('pointermove', (e) => {
-      // Update building placement hologram position
       if (state.placingBuildingType) {
         const pt = getGroundIntersection(e.clientX, e.clientY);
-        if (pt) {
-          ghostGroup.position.set(pt.x, 0, pt.z);
-        }
+        if (pt) ghostGroup.position.set(pt.x, 0, pt.z);
       }
 
       if (!isPointerDown) return;
@@ -2515,20 +2841,15 @@
         return;
       }
 
-      // Box selection drag in Select mode
       if (pointerButton === 0 && state.commandMode === 'select') {
         const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
         if (dist > 10) {
           isDraggingBox = true;
           selectionBoxEl.style.display = 'block';
-          const left = Math.min(startX, e.clientX);
-          const top = Math.min(startY, e.clientY);
-          const width = Math.abs(e.clientX - startX);
-          const height = Math.abs(e.clientY - startY);
-          selectionBoxEl.style.left = `${left}px`;
-          selectionBoxEl.style.top = `${top}px`;
-          selectionBoxEl.style.width = `${width}px`;
-          selectionBoxEl.style.height = `${height}px`;
+          selectionBoxEl.style.left = `${Math.min(startX, e.clientX)}px`;
+          selectionBoxEl.style.top = `${Math.min(startY, e.clientY)}px`;
+          selectionBoxEl.style.width = `${Math.abs(e.clientX - startX)}px`;
+          selectionBoxEl.style.height = `${Math.abs(e.clientY - startY)}px`;
         }
       }
     });
@@ -2549,11 +2870,9 @@
         return;
       }
 
-      // Single Click / Tap in Select Mode
       if (pointerButton === 0 && state.commandMode === 'select') {
         const ent = pickEntityAtScreen(e.clientX, e.clientY);
         if (ent) {
-          // If player already has units selected and clicks an enemy or Cyber Recycler, execute smart action
           if (state.selectedUnits.length > 0 && ent.faction !== 'AU') {
             issueOrderAtScreen(e.clientX, e.clientY, false);
             return;
@@ -2569,72 +2888,61 @@
       }
     });
 
-    // Wheel Zoom
     renderer.domElement.addEventListener('wheel', (e) => {
       e.preventDefault();
-      camZoom = Math.max(38, Math.min(135, camZoom + e.deltaY * 0.05));
+      camZoom = Math.max(36, Math.min(130, camZoom + e.deltaY * 0.05));
       updateCameraTransform();
     }, { passive: false });
 
-    // Camera UI Buttons
     document.getElementById('cam-home').addEventListener('click', () => {
       sfx.playUiClick();
       const myHq = state.buildings.find((b) => b.faction === 'AU' && b.type === 'hq');
-      if (myHq) {
-        camTarget.set(myHq.x, 0, myHq.z);
-      } else {
-        camTarget.set(-45, 0, 45);
-      }
+      if (myHq) camTarget.set(myHq.x, 0, myHq.z);
+      else camTarget.set(-45, 0, 45);
       updateCameraTransform();
     });
 
     document.getElementById('cam-zoom-in').addEventListener('click', () => {
       sfx.playUiClick();
-      camZoom = Math.max(38, camZoom - 12);
+      camZoom = Math.max(36, camZoom - 12);
       updateCameraTransform();
     });
 
     document.getElementById('cam-zoom-out').addEventListener('click', () => {
       sfx.playUiClick();
-      camZoom = Math.min(135, camZoom + 12);
+      camZoom = Math.min(130, camZoom + 12);
       updateCameraTransform();
     });
 
-    // Keyboard Controls
     const keysPressed = {};
     window.addEventListener('keydown', (e) => {
       keysPressed[e.key.toLowerCase()] = true;
-      if (e.key === 'Escape') {
-        cancelBuildingPlacement();
-      }
+      if (e.key === 'Escape') cancelBuildingPlacement();
     });
     window.addEventListener('keyup', (e) => {
       keysPressed[e.key.toLowerCase()] = false;
     });
 
-    // Radar Minimap Click to Jump Camera
+    // Radar Click
     const radarCanvas = document.getElementById('radar-canvas');
     const radarCtx = radarCanvas.getContext('2d');
 
-    function jumpCameraFromRadar(e) {
+    radarCanvas.addEventListener('pointerdown', (e) => {
       const rect = radarCanvas.getBoundingClientRect();
       const rx = (e.clientX - rect.left) / rect.width;
       const rz = (e.clientY - rect.top) / rect.height;
       camTarget.x = (rx - 0.5) * MAP_SIZE;
       camTarget.z = (rz - 0.5) * MAP_SIZE;
       updateCameraTransform();
-    }
+    });
 
-    radarCanvas.addEventListener('pointerdown', jumpCameraFromRadar);
-
-    // === 12. GAMEPLAY SIMULATION LOOP (HARVESTERS, COMBAT, HACKING, RECYCLER, AI WAVES) ===
+    // === 12. GAMEPLAY SIMULATION LOOP ===
     function findNearestEnemy(source, maxScanDist = 34) {
       let best = null;
       let bestDist = maxScanDist;
 
       for (const u of state.units) {
         if (u.hp <= 0 || u.faction === source.faction) continue;
-        // Hack-Rover only hacks ground combat vehicles
         if (source.type === 'hackrover' && u.flying) continue;
         const d = Math.hypot(u.x - source.x, u.z - source.z);
         if (d < bestDist) {
@@ -2653,7 +2961,6 @@
           }
         }
       }
-
       return best;
     }
 
@@ -2661,24 +2968,21 @@
       if (!target || target.hp <= 0) return;
       target.hp -= amount;
 
-      // Update Health Bar scale
       if (target.hpBar && target.hpBar.userData.fg) {
         const ratio = Math.max(0, target.hp / target.maxHp);
         target.hpBar.userData.fg.scale.x = ratio;
         target.hpBar.userData.fg.material.color.setHex(
-          ratio > 0.5 ? 0x00ff9d : ratio > 0.25 ? 0xffcc00 : 0xff2a4b
+          ratio > 0.5 ? 0x00ff66 : ratio > 0.25 ? 0xffcc00 : 0xff2222
         );
       }
 
-      if (target.hp <= 0) {
-        destroyEntity(target);
-      }
+      if (target.hp <= 0) destroyEntity(target);
     }
 
     function destroyEntity(ent) {
       ent.hp = 0;
       scene.remove(ent.mesh);
-      spawnParticles(ent.x, (ent.y || 0) + 2, ent.z, FACTIONS[ent.faction].primary, ent.isBuilding ? 28 : 16);
+      spawnParticles(ent.x, (ent.y || 0) + 2, ent.z, FACTIONS[ent.faction].primary, ent.isBuilding ? 30 : 18);
       sfx.playExplosion(ent.isBuilding || ent.type === 'mothership');
 
       if (ent.isBuilding) {
@@ -2701,14 +3005,14 @@
       const eagleCount = state.buildings.filter((b) => b.faction === 'EAGLE').length;
       const ironCount = state.buildings.filter((b) => b.faction === 'IRON').length;
 
-      document.getElementById('stat-au').textContent = auCount > 0 ? `ONLINE (${auCount})` : 'OFFLINE';
+      document.getElementById('stat-au').textContent = auCount > 0 ? `ONLINE (${auCount})` : 'DESTROYED';
       document.getElementById('stat-eagle').textContent = eagleCount > 0 ? `ACTIVE (${eagleCount})` : 'DEFEATED';
       document.getElementById('stat-iron').textContent = ironCount > 0 ? `ACTIVE (${ironCount})` : 'DEFEATED';
 
       if (eagleCount === 0 && ironCount === 0) {
-        showEvaAlert('🏆 VICTORY! กองทัพ A.U. Cyber Syndicate ของ Commander Achita & General Udom ยึดครองสมรภูมิปี 2030 ได้สำเร็จ!', 'hack');
+        showEvaAlert('🏆 TOTAL VICTORY! กองทัพ A.U. Cyber Syndicate ของ Commander Achita & General Udom ยึดครองสมรภูมิโลกสำเร็จ!', 'hack');
       } else if (auCount === 0) {
-        showEvaAlert('💥 ฐานบัญชาการ A.U. ถูกทำลาย! กดปุ่มรีเซ็ตหรือสร้างฐานใหม่เพื่อแก้มือ', 'warn');
+        showEvaAlert('💥 ฐานบัญชาการ A.U. ถูกทำลายหมดสิ้น!', 'warn');
       }
     }
 
@@ -2721,7 +3025,6 @@
       const mainTarget = playerTargets[Math.floor(Math.random() * playerTargets.length)];
       let spawnedAny = false;
 
-      // AI 1: United Eagle Hegemony (Prism Laser Tanks + Kamikaze Drones)
       if (eagleFactories.length > 0) {
         const base = eagleFactories[0];
         const count = Math.min(4, 1 + Math.floor(state.waveCount / 2));
@@ -2733,7 +3036,6 @@
         }
       }
 
-      // AI 2: Eurasian Iron Bloc (Heavy Armor + Sky Mothership Kirov)
       if (ironFactories.length > 0) {
         const base = ironFactories[0];
         const u1 = spawnUnit('prism', 'IRON', base.x + 5, base.z + 7);
@@ -2749,15 +3051,14 @@
         state.waveCount++;
         sfx.playSiren();
         showEvaAlert(
-          `🚨 ไซเรนเตือนภัย! ทัพ United Eagle & Eurasian Iron ระลอกที่ ${state.waveCount - 1} กำลังเคลื่อนพลบุกฐาน A.U.! (ใช้ Hack-Rover ดักยึดรถถังศัตรูได้เลย!)`,
+          `🚨 WARNING! กองทัพ United Eagle & Eurasian Iron ระลอกที่ ${state.waveCount - 1} กำลังบุกฐาน! ส่ง A.U. Hack-Rover ไปยิงคลื่นยึดรถถังศัตรูได้เลย!`,
           'warn'
         );
       }
     }
 
     function updateSimulation(dt) {
-      // 1. Keyboard Camera Pan
-      const panSpeed = 48 * dt;
+      const panSpeed = 52 * dt;
       if (keysPressed['w'] || keysPressed['arrowup']) {
         camTarget.x += panSpeed * 0.7;
         camTarget.z -= panSpeed * 0.7;
@@ -2779,29 +3080,29 @@
         updateCameraTransform();
       }
 
-      // 2. AI Wave Countdown
       state.waveTimer -= dt;
       if (state.waveTimer <= 0) {
         state.waveTimer = 42;
         spawnAiWave();
       }
-      document.getElementById('wave-timer').textContent = `WAVE IN ${Math.ceil(state.waveTimer)}s`;
+      document.getElementById('wave-timer').textContent = `WAVE: ${Math.ceil(state.waveTimer)}s`;
 
-      // 3. Ore Regeneration & Crystal Animation
       for (const ore of state.oreNodes) {
-        ore.mesh.rotation.y += dt * 0.6;
         if (ore.amount < ore.maxAmount) {
           ore.amount = Math.min(ore.maxAmount, ore.amount + dt * 6);
         }
-        const s = 0.35 + 0.65 * (ore.amount / ore.maxAmount);
+        const s = 0.4 + 0.6 * (ore.amount / ore.maxAmount);
         ore.mesh.scale.set(s, s, s);
       }
 
-      // 4. Buildings Logic (Rotating parts + Signal Override Tower defense)
       for (const b of state.buildings) {
         if (b.hp <= 0) continue;
         if (b.model.userData.rotPart) {
-          b.model.userData.rotPart.rotation.y += dt * (b.faction === 'AU' && state.lowPower ? 0.4 : 1.8);
+          if (b.type === 'recycler') {
+            b.model.userData.rotPart.rotation.x += dt * 3.5;
+          } else {
+            b.model.userData.rotPart.rotation.y += dt * (b.faction === 'AU' && state.lowPower ? 0.35 : 1.6);
+          }
         }
 
         if (b.type === 'tower') {
@@ -2811,9 +3112,9 @@
             const target = findNearestEnemy(b, b.range);
             if (target) {
               b.fireTimer = effCooldown;
-              const startVec = new THREE.Vector3(b.x, 6.8, b.z);
+              const startVec = new THREE.Vector3(b.x, 7.4, b.z);
               const endVec = new THREE.Vector3(target.x, (target.y || 0) + 1.5, target.z);
-              spawnBeam(startVec, endVec, FACTIONS[b.faction].primary, 0.22);
+              spawnBeam(startVec, endVec, FACTIONS[b.faction].primary, 0.24, true);
               sfx.playLaser(false);
               applyDamage(target, b.damage);
             }
@@ -2821,19 +3122,22 @@
         }
       }
 
-      // 5. Units Logic (Harvesters, Recycler Entry, Combat, Hacking, Movement)
       for (let i = state.units.length - 1; i >= 0; i--) {
         const u = state.units[i];
         if (!u || u.hp <= 0) continue;
 
         if (u.model.userData.rotPart) {
-          u.model.userData.rotPart.rotation.y += dt * 3.0;
+          if (u.type === 'harvester') {
+            u.model.userData.rotPart.rotation.x += dt * 5.0;
+          } else {
+            u.model.userData.rotPart.rotation.y += dt * 2.8;
+          }
         }
         if (u.crownMesh.visible) {
           u.crownMesh.rotation.y += dt * 2.5;
         }
 
-        // 5A. Check if entering Cyber Recycler
+        // Entering Cyber Recycler (Grinder)
         if (u.recycleTarget) {
           if (u.recycleTarget.hp <= 0) {
             u.recycleTarget = null;
@@ -2843,8 +3147,8 @@
               const cash = u.recycleValue;
               addCredits(cash);
               sfx.playCashRecycle();
-              spawnParticles(u.x, 2.5, u.z, 0x00ff9d, 22);
-              showEvaAlert(`♻️ Cyber Recycler ย่อยสลาย ${u.name} เรียบร้อย! ได้รับเงินสด +$${cash} Credits!`, 'hack');
+              spawnParticles(u.x, 2.5, u.z, 0xffcc00, 24);
+              showEvaAlert(`♻️ Cyber Grinder บดย่อย [${u.name}] สำเร็จ! รับเงินสด +$${cash} Credits!`, 'hack');
               scene.remove(u.mesh);
               state.units.splice(i, 1);
               state.selectedUnits = state.selectedUnits.filter((s) => s.id !== u.id);
@@ -2856,7 +3160,7 @@
           }
         }
 
-        // 5B. Autonomous Harvester Economy Cycle
+        // Harvester Economy Cycle
         if (u.type === 'harvester' && u.harvestState !== 'manual') {
           if (u.harvestState === 'seeking_ore') {
             let bestOre = null;
@@ -2871,19 +3175,17 @@
               }
             }
             if (bestOre) {
-              if (bestDist > 3.2) {
+              if (bestDist > 3.4) {
                 u.targetPos = { x: bestOre.x, z: bestOre.z };
               } else {
                 u.targetPos = null;
-                const mined = Math.min(bestOre.amount, dt * 110);
+                const mined = Math.min(bestOre.amount, dt * 115);
                 bestOre.amount -= mined;
                 u.cargo += mined;
-                if (Math.random() < 0.2) {
-                  spawnParticles(bestOre.x, 1.2, bestOre.z, 0x00ff9d, 1);
+                if (Math.random() < 0.22) {
+                  spawnParticles(bestOre.x, 1.2, bestOre.z, 0xffcc00, 1);
                 }
-                if (u.cargo >= u.maxCargo) {
-                  u.harvestState = 'returning';
-                }
+                if (u.cargo >= u.maxCargo) u.harvestState = 'returning';
               }
             }
           } else if (u.harvestState === 'returning') {
@@ -2905,7 +3207,7 @@
                 if (u.faction === 'AU') {
                   const earned = Math.round(u.cargo);
                   addCredits(earned);
-                  spawnParticles(nearestRef.x, 3, nearestRef.z, 0x00ff9d, 8);
+                  spawnParticles(nearestRef.x, 3, nearestRef.z, 0xffcc00, 8);
                 }
                 u.cargo = 0;
                 u.harvestState = 'seeking_ore';
@@ -2914,7 +3216,7 @@
           }
         }
 
-        // 5C. Combat & Hack-Rover Targeting
+        // Combat & Yuri Mind-Control Targeting
         if (u.type !== 'harvester' && !u.recycleTarget) {
           if (u.targetEntity && (u.targetEntity.hp <= 0 || u.targetEntity.faction === u.faction)) {
             u.targetEntity = null;
@@ -2922,24 +3224,19 @@
 
           if (!u.targetEntity) {
             const autoTarget = findNearestEnemy(u, u.range + 8);
-            if (autoTarget) {
-              u.targetEntity = autoTarget;
-            }
+            if (autoTarget) u.targetEntity = autoTarget;
           }
 
           if (u.targetEntity) {
             const dist = Math.hypot(u.targetEntity.x - u.x, u.targetEntity.z - u.z);
             if (dist <= u.range) {
-              // In firing range
               u.fireTimer -= dt;
               const angleToTarget = Math.atan2(u.targetEntity.x - u.x, u.targetEntity.z - u.z);
               u.model.rotation.y = angleToTarget;
 
               if (u.type === 'kamikaze') {
-                // Kamikaze Drone detonates on impact!
-                spawnParticles(u.x, u.y + 1, u.z, 0x00f0ff, 22);
+                spawnParticles(u.x, u.y + 1, u.z, 0xff5500, 24);
                 sfx.playExplosion(false);
-                // Splash damage
                 for (const enemyU of state.units) {
                   if (enemyU.faction !== u.faction && Math.hypot(enemyU.x - u.x, enemyU.z - u.z) < 6.5) {
                     applyDamage(enemyU, u.damage);
@@ -2953,13 +3250,12 @@
                 destroyEntity(u);
                 continue;
               } else if (u.type === 'hackrover') {
-                // A.U. Hack-Rover Neural Override Beam!
                 if (u.targetEntity.isUnit && !u.targetEntity.flying) {
                   if (u.fireTimer <= 0) {
                     u.fireTimer = u.cooldown;
-                    const sVec = new THREE.Vector3(u.x, 2.2, u.z);
+                    const sVec = new THREE.Vector3(u.x, 2.5, u.z);
                     const eVec = new THREE.Vector3(u.targetEntity.x, 1.8, u.targetEntity.z);
-                    spawnBeam(sVec, eVec, 0xb829ff, 0.65);
+                    spawnBeam(sVec, eVec, 0xdf00ff, 0.75, true);
                     convertUnitFaction(u.targetEntity, u.faction);
                     u.targetEntity = null;
                   }
@@ -2967,24 +3263,22 @@
                   u.targetEntity = null;
                 }
               } else if (u.type === 'prism') {
-                // Prism Laser Tank (Chain Refraction Laser!)
                 if (u.fireTimer <= 0) {
                   u.fireTimer = u.cooldown;
-                  const sVec = new THREE.Vector3(u.x, 2.1, u.z);
+                  const sVec = new THREE.Vector3(u.x, 2.2, u.z);
                   const eVec = new THREE.Vector3(u.targetEntity.x, (u.targetEntity.y || 0) + 1.5, u.targetEntity.z);
-                  const beamCol = u.faction === 'AU' ? 0x00f0ff : FACTIONS[u.faction].primary;
-                  spawnBeam(sVec, eVec, beamCol, 0.26);
+                  const beamCol = u.faction === 'AU' ? 0x00e5ff : FACTIONS[u.faction].primary;
+                  spawnBeam(sVec, eVec, beamCol, 0.26, false);
                   sfx.playLaser(true);
                   applyDamage(u.targetEntity, u.damage);
 
-                  // Refract to up to 2 nearby enemies
                   let bounces = 0;
                   for (const other of state.units) {
                     if (bounces >= 2) break;
                     if (other.hp > 0 && other.faction !== u.faction && other.id !== u.targetEntity.id) {
                       if (Math.hypot(other.x - u.targetEntity.x, other.z - u.targetEntity.z) < 11) {
                         const bVec = new THREE.Vector3(other.x, (other.y || 0) + 1.4, other.z);
-                        spawnBeam(eVec, bVec, 0xb829ff, 0.24);
+                        spawnBeam(eVec, bVec, 0xdf00ff, 0.24, false);
                         applyDamage(other, u.damage * 0.6);
                         bounces++;
                       }
@@ -2992,25 +3286,22 @@
                   }
                 }
               } else if (u.type === 'mothership') {
-                // Sky Mothership Kirov Carpet Bombing
                 if (u.fireTimer <= 0) {
                   u.fireTimer = u.cooldown;
-                  const sVec = new THREE.Vector3(u.x, u.y - 1.5, u.z);
+                  const sVec = new THREE.Vector3(u.x, u.y - 2.0, u.z);
                   const eVec = new THREE.Vector3(u.targetEntity.x, 0.5, u.targetEntity.z);
-                  spawnBeam(sVec, eVec, 0xff9900, 0.35);
-                  spawnParticles(u.targetEntity.x, 1.5, u.targetEntity.z, 0xff5500, 18);
+                  spawnBeam(sVec, eVec, 0xffaa00, 0.35, false);
+                  spawnParticles(u.targetEntity.x, 1.5, u.targetEntity.z, 0xff4400, 20);
                   sfx.playExplosion(true);
                   applyDamage(u.targetEntity, u.damage);
                 }
               }
             } else {
-              // Move closer to targetEntity
               u.targetPos = { x: u.targetEntity.x, z: u.targetEntity.z };
             }
           }
         }
 
-        // 5D. Movement & Soft Separation
         if (u.targetPos) {
           const dx = u.targetPos.x - u.x;
           const dz = u.targetPos.z - u.z;
@@ -3018,24 +3309,21 @@
           const stopDist = u.targetEntity ? Math.max(2.0, u.range * 0.85) : 1.1;
 
           if (dist > stopDist) {
-            const vx = (dx / dist) * u.speed * dt;
-            const vz = (dz / dist) * u.speed * dt;
-            u.x += vx;
-            u.z += vz;
+            u.x += (dx / dist) * u.speed * dt;
+            u.z += (dz / dist) * u.speed * dt;
             u.model.rotation.y = Math.atan2(dx, dz);
           } else if (!u.targetEntity && !u.recycleTarget) {
             u.targetPos = null;
           }
         }
 
-        // Soft Unit Separation
         for (const other of state.units) {
           if (other.id === u.id || other.flying !== u.flying) continue;
           const sdx = u.x - other.x;
           const sdz = u.z - other.z;
           const sdist = Math.hypot(sdx, sdz);
-          if (sdist > 0.01 && sdist < 2.8) {
-            const push = (2.8 - sdist) * 2.5 * dt;
+          if (sdist > 0.01 && sdist < 3.0) {
+            const push = (3.0 - sdist) * 2.5 * dt;
             u.x += (sdx / sdist) * push;
             u.z += (sdz / sdist) * push;
           }
@@ -3046,7 +3334,6 @@
         u.mesh.position.set(u.x, u.y, u.z);
       }
 
-      // 6. Update Beams & Particles
       for (let i = state.beams.length - 1; i >= 0; i--) {
         const b = state.beams[i];
         b.timer -= dt;
@@ -3074,15 +3361,16 @@
       }
     }
 
-    // === 13. RADAR MINIMAP RENDERING ===
+    // === 13. MILITARY RADAR MINIMAP RENDERING ===
+    let radarSweepAngle = 0;
     function renderRadar() {
       const w = radarCanvas.width;
       const h = radarCanvas.height;
-      radarCtx.fillStyle = '#040814';
+      radarCtx.fillStyle = '#061109';
       radarCtx.fillRect(0, 0, w, h);
 
-      // Grid lines
-      radarCtx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
+      // Military CRT Grid
+      radarCtx.strokeStyle = 'rgba(0, 255, 102, 0.14)';
       radarCtx.lineWidth = 1;
       radarCtx.beginPath();
       radarCtx.moveTo(w / 2, 0);
@@ -3091,32 +3379,40 @@
       radarCtx.lineTo(w, h / 2);
       radarCtx.stroke();
 
+      // Rotating Radar Sweep Line
+      radarSweepAngle = (radarSweepAngle + 0.03) % (Math.PI * 2);
+      radarCtx.strokeStyle = 'rgba(0, 255, 102, 0.35)';
+      radarCtx.beginPath();
+      radarCtx.moveTo(w / 2, h / 2);
+      radarCtx.lineTo(w / 2 + Math.cos(radarSweepAngle) * w, h / 2 + Math.sin(radarSweepAngle) * w);
+      radarCtx.stroke();
+
       const toRx = (wx) => ((wx / MAP_SIZE) + 0.5) * w;
       const toRy = (wz) => ((wz / MAP_SIZE) + 0.5) * h;
 
-      // Draw Ore Nodes
-      radarCtx.fillStyle = '#00ff9d';
+      // Ore Nodes
+      radarCtx.fillStyle = '#ffcc00';
       for (const ore of state.oreNodes) {
         if (ore.amount > 100) {
           radarCtx.fillRect(toRx(ore.x) - 1.5, toRy(ore.z) - 1.5, 3, 3);
         }
       }
 
-      // Draw Buildings
+      // Buildings
       for (const b of state.buildings) {
         radarCtx.fillStyle = FACTIONS[b.faction].css;
         radarCtx.fillRect(toRx(b.x) - 3.5, toRy(b.z) - 3.5, 7, 7);
       }
 
-      // Draw Units
+      // Units
       for (const u of state.units) {
         radarCtx.fillStyle = FACTIONS[u.faction].css;
         radarCtx.beginPath();
-        radarCtx.arc(toRx(u.x), toRy(u.z), 2.3, 0, Math.PI * 2);
+        radarCtx.arc(toRx(u.x), toRy(u.z), 2.5, 0, Math.PI * 2);
         radarCtx.fill();
       }
 
-      // Draw Camera Viewport Indicator
+      // Camera Box
       radarCtx.strokeStyle = '#ffffff';
       radarCtx.lineWidth = 1.2;
       radarCtx.strokeRect(toRx(camTarget.x) - 16, toRy(camTarget.z) - 10, 32, 20);
@@ -3124,28 +3420,27 @@
 
     // === 14. INITIAL BATTLEFIELD SETUP ===
     function initBattlefield() {
-      // 1. Spawn Energy Crystal Ore Fields
-      spawnOreCluster(-22, 32, 9);   // Near A.U. Player Base
-      spawnOreCluster(-58, 12, 7);   // West Expansion Ore
-      spawnOreCluster(6, 4, 10);     // Center Contested High-Yield Ore Field
-      spawnOreCluster(26, -28, 7);   // Near United Eagle Base
-      spawnOreCluster(-20, -34, 7);  // Near Eurasian Iron Base
+      spawnOreCluster(-22, 32, 9);
+      spawnOreCluster(-60, 12, 7);
+      spawnOreCluster(4, 4, 10);
+      spawnOreCluster(26, -28, 7);
+      spawnOreCluster(-20, -34, 7);
 
-      // 2. Player Faction: A.U. Cyber Syndicate (South-West)
+      // Player Base: A.U. Cyber Syndicate (South-West)
       spawnBuilding('hq', 'AU', -52, 52);
       spawnBuilding('power', 'AU', -64, 48);
-      spawnBuilding('refinery', 'AU', -38, 46);
+      spawnBuilding('refinery', 'AU', -37, 47);
       spawnBuilding('factory', 'AU', -46, 35);
       spawnBuilding('recycler', 'AU', -60, 35);
       spawnBuilding('tower', 'AU', -32, 32);
 
-      // Initial A.U. Strike Squad (Commander Achita & General Udom vanguard)
-      spawnUnit('hackrover', 'AU', -36, 26);
-      spawnUnit('prism', 'AU', -41, 27);
-      spawnUnit('kamikaze', 'AU', -32, 28);
-      spawnUnit('kamikaze', 'AU', -30, 30);
+      // Starting A.U. Armored Battalion
+      spawnUnit('hackrover', 'AU', -36, 25);
+      spawnUnit('prism', 'AU', -42, 26);
+      spawnUnit('kamikaze', 'AU', -31, 27);
+      spawnUnit('kamikaze', 'AU', -29, 29);
 
-      // 3. AI Faction 1: United Eagle Hegemony (North-East — Red/Gold)
+      // AI 1: United Eagle Hegemony (North-East)
       spawnBuilding('hq', 'EAGLE', 54, -54);
       spawnBuilding('power', 'EAGLE', 66, -48);
       spawnBuilding('refinery', 'EAGLE', 40, -48);
@@ -3154,7 +3449,7 @@
       spawnUnit('prism', 'EAGLE', 38, -28);
       spawnUnit('prism', 'EAGLE', 44, -28);
 
-      // 4. AI Faction 2: Eurasian Iron Bloc (North-West — Orange/Steel)
+      // AI 2: Eurasian Iron Bloc (North-West)
       spawnBuilding('hq', 'IRON', -48, -54);
       spawnBuilding('power', 'IRON', -60, -48);
       spawnBuilding('factory', 'IRON', -38, -44);
@@ -3171,7 +3466,7 @@
     const btnAudio = document.getElementById('btn-audio');
     btnAudio.addEventListener('click', () => {
       const on = sfx.toggle();
-      btnAudio.textContent = on ? '🔊 เสียง: เปิด' : '🔇 เสียง: ปิด';
+      btnAudio.textContent = on ? '🔊 AUDIO: ON' : '🔇 AUDIO: OFF';
       btnAudio.classList.toggle('active', on);
     });
 
@@ -3191,7 +3486,7 @@
       sfx.init();
       sfx.playUiClick();
       modalOverlay.classList.add('hidden');
-      showEvaAlert('⚡ Commander Achita & General Udom: เริ่มปฏิบัติการแฮ็กยึดสมรภูมิได้!');
+      showEvaAlert('⚔️ Commander Achita & General Udom: กองทัพพลังจิตไซเบอร์ A.U. พร้อมเคลื่อนพล!');
     });
 
     window.addEventListener('resize', () => {
